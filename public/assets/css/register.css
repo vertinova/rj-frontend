@@ -1,0 +1,229 @@
+/* General Body & Background - Tidak ada perubahan di sini */
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0; /* Pastikan tidak ada padding global yang aneh di body */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden; /* Mencegah scrollbar dari animasi background */
+    background: linear-gradient(135deg, #FF6F61, #FFD166, #4CAF50, #2196F3, #9C27B0);
+    background-size: 400% 400%;
+    animation: gradientBackground 15s ease infinite;
+    color: #333;
+}
+
+@keyframes gradientBackground {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Container untuk posisi kotak login - Tidak ada perubahan di sini */
+.register-container {
+    perspective: 1000px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%; /* Mengisi tinggi penuh agar bisa scroll kalau kontennya panjang */
+    /* Tambahkan padding vertikal di sini agar kotak tidak mentok ke atas/bawah */
+    padding: 20px 0; /* Memberi ruang di atas dan bawah kontainer */
+    box-sizing: border-box; /* Pastikan padding tidak menambah lebar/tinggi di luar dugaan */
+}
+
+
+/* Kotak Register (Kartu) */
+.register-box {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 40px; /* Padding ini mungkin akan di override di media query */
+    border-radius: 20px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    width: 400px; /* Lebar default untuk desktop */
+    max-width: 90%; /* Pastikan responsif pada layar kecil */
+    text-align: center;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transform: translateY(0);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    /* Tambahkan margin-top dan margin-bottom default agar ada jarak dari tepi vertikal */
+    margin-top: 20px;
+    margin-bottom: 20px;
+    box-sizing: border-box; /* Penting untuk konsistensi ukuran */
+}
+
+.register-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Logo and Title - Tidak ada perubahan di sini */
+.logo img {
+    max-width: 100px;
+    margin-bottom: 15px;
+}
+
+.logo h2 {
+    font-size: 2.2em;
+    color: #2c3e50;
+    margin-bottom: 5px;
+    font-weight: 700;
+}
+
+.logo p {
+    font-size: 1em;
+    color: #7f8c8d;
+    margin-bottom: 30px;
+}
+
+/* Input Group Styling - Tidak ada perubahan di sini */
+.input-group {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.input-group i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #95a5a6;
+    font-size: 1.1em;
+    transition: color 0.3s ease;
+}
+
+.input-group input {
+    width: calc(100% - 60px);
+    padding: 12px 15px 12px 45px;
+    border: 1px solid #dfe6e9;
+    border-radius: 10px;
+    font-size: 1em;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-group input:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+}
+
+.input-group.has-error input {
+    border-color: #e74c3c;
+}
+
+.input-group input:focus + i {
+    color: #3498db;
+}
+
+/* Error Messages - Tidak ada perubahan di sini */
+.help-block {
+    color: #e74c3c;
+    font-size: 0.85em;
+    margin-top: 5px;
+    display: block;
+    text-align: left;
+    padding-left: 45px;
+}
+
+.alert.error {
+    background-color: #fce7e7;
+    color: #e74c3c;
+    border: 1px solid #e74c3c;
+    padding: 10px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 0.95em;
+    text-align: left;
+}
+
+/* Register Button - Tidak ada perubahan di sini */
+.btn-register {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(45deg, #2ecc71, #27ae60);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.2em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 1px;
+    box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+}
+
+.btn-register:hover {
+    background: linear-gradient(45deg, #27ae60, #2ecc71);
+    box-shadow: 0 8px 20px rgba(46, 204, 113, 0.4);
+    transform: translateY(-2px);
+}
+
+.btn-register:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 10px rgba(46, 204, 113, 0.2);
+}
+
+/* Login Link - Tidak ada perubahan di sini */
+.login-link {
+    margin-top: 30px;
+    font-size: 0.95em;
+    color: #7f8c8d;
+}
+
+.login-link a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.login-link a:hover {
+    color: #2980b9;
+    text-decoration: underline;
+}
+
+/* Penyesuaian Responsif untuk layar kecil */
+@media (max-width: 480px) {
+    /* Pastikan body tidak memiliki overflow-y: hidden di ponsel jika kontennya panjang */
+    body {
+        overflow-y: auto; /* Izinkan scrolling vertikal jika konten melebihi tinggi layar */
+    }
+
+    .register-container {
+        /* Hapus align-items: center di sini jika kontennya bisa lebih tinggi dari viewport */
+        /* display: block; */ /* Ubah ke block agar konten bisa memanjang */
+        padding: 30px 0; /* Tambahkan padding atas dan bawah yang lebih besar untuk ruang bernapas */
+    }
+
+    .register-box {
+        width: 90%;
+        padding: 30px 20px; /* Padding internal kotak register */
+        /* Pastikan margin diatur dengan baik untuk ponsel */
+        margin: 20px auto; /* Margin atas/bawah 20px, auto untuk centering horizontal */
+    }
+
+    .logo h2 {
+        font-size: 1.8em;
+    }
+
+    .input-group input {
+        padding: 10px 15px 10px 40px;
+    }
+
+    .input-group i {
+        left: 10px;
+        font-size: 1em;
+    }
+    
+    .help-block {
+        padding-left: 40px;
+    }
+
+    .btn-register {
+        font-size: 1.1em;
+        padding: 12px;
+    }
+}

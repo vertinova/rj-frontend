@@ -1,0 +1,1115 @@
+/* admin.css - Desain yang Ditingkatkan */
+
+/* Variabel CSS untuk konsistensi */
+:root {
+    --primary-red: #e60000; /* Warna merah utama untuk Rajawali */
+    --dark-gray: #343a40;
+    --text-color: #444; /* Sedikit lebih lembut dari hitam murni */
+    --light-text-color: #666;
+    --success-green: #28a745;
+    --danger-red: #dc3545;
+    --warning-yellow: #ffc107;
+    --info-blue: #17a2b8;
+    --gojek-green: #00AA13;
+    --accent-blue: #007bff; /* Warna biru untuk elemen interaktif umum */
+    --light-background: #fdfdfd; /* Background yang lebih cerah */
+    --off-white: #fefefe;
+    --border-color: #e0e0e0;
+    --light-border: #f0f0f0;
+    --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.05);
+    --shadow-medium: 0 4px 15px rgba(0, 0, 0, 0.1);
+    --spacing-unit: 1rem; /* Base spacing unit for responsive scaling */
+    --border-radius: 8px; /* Konsisten radius sudut */
+}
+
+/* Reset dan Gaya Dasar */
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    background-color: var(--light-background);
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    line-height: 1.6;
+    padding-bottom: calc(var(--spacing-unit) * 5); /* Ruang untuk fixed bottom nav */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Header */
+.header {
+    background-color: var(--dark-gray);
+    color: white;
+    padding: calc(var(--spacing-unit) * 1.2) calc(var(--spacing-unit) * 1.5);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow-medium);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    width: 100%;
+    box-sizing: border-box;
+    border-bottom-left-radius: var(--border-radius); /* Sudut membulat */
+    border-bottom-right-radius: var(--border-radius);
+}
+
+.header .logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: white;
+    font-weight: 600;
+    font-size: 1.25rem; /* Ukuran font lebih besar */
+    letter-spacing: 0.5px;
+}
+
+.header .logo img {
+    height: 2.8rem; /* Tinggi lebih besar */
+    margin-right: 0.8rem; /* Margin lebih besar */
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.2); /* Sedikit border putih */
+    transition: transform 0.3s ease;
+}
+.header .logo img:hover {
+    transform: rotate(5deg) scale(1.05);
+}
+
+
+.admin-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem; /* Gap lebih besar */
+}
+
+.admin-controls span {
+    font-size: 0.95rem; /* Ukuran font lebih besar */
+    white-space: nowrap;
+    opacity: 0.9;
+    padding: 0.3rem 0.5rem;
+    border-radius: 5px;
+    background-color: rgba(255,255,255,0.1);
+}
+
+/* Container Utama */
+.container {
+    flex: 1;
+    padding: calc(var(--spacing-unit) * 2);
+    max-width: 1200px;
+    margin: calc(var(--spacing-unit) * 2.5) auto; /* Margin atas lebih besar */
+    background-color: var(--off-white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-medium);
+    position: relative; /* Untuk alert */
+}
+
+/* Judul Halaman dan Bagian */
+h1, h2, h3 {
+    color: var(--dark-gray);
+    margin-bottom: calc(var(--spacing-unit) * 1.5);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-weight: 600;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--light-border);
+}
+
+h1 { font-size: 2rem; } /* Ukuran lebih besar */
+h2 { font-size: 1.7rem; }
+h3 { font-size: 1.4rem; }
+
+h1 i, h2 i, h3 i {
+    color: var(--primary-red);
+    font-size: 1em; /* Ukuran ikon relatif terhadap font H */
+    vertical-align: middle;
+}
+
+/* Alerts */
+.alert {
+    padding: var(--spacing-unit);
+    margin-bottom: calc(var(--spacing-unit) * 1.5);
+    border-radius: var(--border-radius);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    text-align: left;
+    display: none;
+    font-weight: 500;
+    animation: fadeInScale 0.3s ease-out; /* Animasi fade in dan sedikit skala */
+    position: sticky;
+    top: calc(var(--spacing-unit) * 0.5); /* Posisi di bawah header */
+    z-index: 90;
+    width: calc(100% - 2 * var(--spacing-unit)); /* Memperhitungkan padding container */
+    box-sizing: border-box;
+}
+.alert i {
+    margin-right: 0.8rem;
+    font-size: 1.3em; /* Ukuran ikon lebih besar */
+    flex-shrink: 0;
+}
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Ukuran kartu lebih besar */
+    gap: calc(var(--spacing-unit) * 1.5);
+    margin-bottom: calc(var(--spacing-unit) * 2);
+    margin-top: calc(var(--spacing-unit) * 1);
+}
+.dashboard-card {
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-light);
+    padding: calc(var(--spacing-unit) * 1.8); /* Padding lebih besar */
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-bottom-color 0.3s ease;
+    cursor: pointer;
+    border-bottom: 5px solid; /* Ketebalan border lebih */
+}
+.dashboard-card:hover {
+    transform: translateY(-8px); /* Efek hover lebih menonjol */
+    box-shadow: var(--shadow-medium);
+}
+.dashboard-card .icon {
+    font-size: 3.5rem; /* Ukuran ikon lebih besar */
+    margin-bottom: 1rem;
+    color: var(--dark-gray);
+}
+.dashboard-card.total { border-color: var(--accent-blue); }
+.dashboard-card.lolos { border-color: var(--success-green); }
+.dashboard-card.pending { border-color: var(--warning-yellow); }
+.dashboard-card.tidak-lolos { border-color: var(--danger-red); }
+.dashboard-card.absensi { border-color: var(--info-blue); }
+
+.dashboard-card.total .icon { color: var(--accent-blue); }
+.dashboard-card.lolos .icon { color: var(--success-green); }
+.dashboard-card.pending .icon { color: var(--warning-yellow); }
+.dashboard-card.tidak-lolos .icon { color: var(--danger-red); }
+.dashboard-card.absensi .icon { color: var(--info-blue); }
+
+.dashboard-card h3 {
+    margin: 0.5rem 0;
+    font-size: 1.2rem; /* Ukuran font lebih besar */
+    color: var(--light-text-color);
+    border-bottom: none; /* Hapus border di h3 card */
+    padding-bottom: 0;
+}
+.dashboard-card .count {
+    font-size: 3rem; /* Ukuran angka lebih besar */
+    font-weight: 700;
+    color: var(--primary-red);
+    line-height: 1; /* Rata tengah vertikal */
+}
+.dashboard-card.total .count { color: var(--accent-blue); }
+.dashboard-card.lolos .count { color: var(--success-green); }
+.dashboard-card.pending .count { color: var(--warning-yellow); }
+.dashboard-card.tidak-lolos .count { color: var(--danger-red); }
+.dashboard-card.absensi .count { color: var(--info-blue); }
+
+.dashboard-info {
+    text-align: center;
+    font-size: 1rem;
+    color: var(--light-text-color);
+    margin-bottom: calc(var(--spacing-unit) * 2);
+}
+
+/* Infografis */
+.infographic-section {
+    background-color: white;
+    padding: calc(var(--spacing-unit) * 1.5);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-light);
+    margin-bottom: calc(var(--spacing-unit) * 2);
+    text-align: left;
+    margin-top: calc(var(--spacing-unit) * 2);
+}
+.infographic-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 0;
+    border-bottom: 1px dashed var(--light-border);
+}
+.infographic-item:last-child {
+    border-bottom: none;
+}
+.infographic-item .label {
+    font-weight: 600;
+    color: var(--dark-gray);
+    font-size: 1rem;
+}
+.infographic-item .value {
+    font-weight: 600;
+    color: var(--primary-red);
+    font-size: 1.1rem;
+}
+
+/* Content Sections */
+.content-section {
+    display: none;
+    padding-top: calc(var(--spacing-unit) * 1.5);
+    animation: fadeIn 0.5s ease-out;
+}
+.content-section.active {
+    display: block;
+}
+
+/* Table Styles */
+.table-responsive {
+    overflow-x: auto;
+    margin-top: calc(var(--spacing-unit) * 1.5);
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--border-radius); /* Sudut membulat pada keseluruhan tabel */
+    box-shadow: var(--shadow-light);
+    background-color: white;
+    padding: 1px; /* Sedikit padding agar bayangan terlihat */
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 0; /* Hapus margin bawah default tabel */
+    font-size: 0.95em; /* Ukuran font lebih mudah dibaca */
+    min-width: 800px; /* Lebar minimum untuk horizontal scroll */
+}
+table thead tr {
+    background-color: var(--primary-red);
+    color: white;
+    text-align: left;
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+    overflow: hidden; /* Pastikan radius sudut terlihat */
+}
+table th, table td {
+    padding: 12px 15px; /* Padding lebih besar */
+    border: 1px solid var(--light-border); /* Border lebih halus */
+    vertical-align: middle; /* Vertikal rata tengah */
+    font-size: 0.95rem; /* Ukuran font konsisten */
+}
+table th {
+    font-weight: 600;
+    white-space: nowrap;
+    text-transform: uppercase; /* Huruf kapital */
+    letter-spacing: 0.5px;
+}
+table tbody tr:nth-child(odd) { /* Zebra striping yang lebih jelas */
+    background-color: var(--off-white);
+}
+table tbody tr:nth-child(even) {
+    background-color: #f6f6f6;
+}
+table tbody tr:hover {
+    background-color: #eef2f7; /* Efek hover lebih menonjol */
+    transform: scale(1.005);
+    box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+    position: relative;
+    z-index: 1;
+}
+
+/* Status Badges in tables */
+.status-badge {
+    display: inline-block;
+    padding: 0.4rem 0.8rem; /* Padding lebih besar */
+    border-radius: 20px; /* Lebih membulat (pill-shaped) */
+    font-weight: bold;
+    font-size: 0.75rem; /* Ukuran font badge */
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+    text-transform: capitalize;
+    min-width: 70px; /* Lebar minimum untuk konsistensi */
+    text-align: center;
+}
+.status-badge.pending { background-color: var(--warning-yellow); color: var(--dark-gray); }
+.status-badge.lolos { background-color: var(--success-green); }
+.status-badge.tidak-lolos { background-color: var(--danger-red); }
+.status-badge.hadir { background-color: var(--success-green); }
+.status-badge.sakit { background-color: var(--warning-yellow); color: var(--dark-gray); }
+.status-badge.izin { background-color: var(--info-blue); }
+.status-badge.alpa { background-color: var(--danger-red); }
+.status-badge.user { background-color: var(--accent-blue); }
+.status-badge.admin { background-color: #6f42c1; /* Lebih gelap untuk admin */ }
+.status-badge.loading {
+    background-color: #6c757d;
+    animation: pulse 1s infinite alternate;
+}
+
+@keyframes pulse {
+    from { opacity: 1; }
+    to { opacity: 0.7; }
+}
+
+
+/* Action Buttons in tables */
+.form-status-update select {
+    padding: 0.4rem 0.6rem;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+    font-size: 0.85rem;
+    background-color: #fff;
+    cursor: pointer;
+    width: 100%;
+    max-width: 120px; /* Batasi lebar dropdown */
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+.form-status-update select:focus {
+    outline: none;
+    border-color: var(--primary-red);
+    box-shadow: 0 0 0 3px rgba(230, 0, 0, 0.15); /* Bayangan fokus lebih halus */
+}
+
+.view-docs-btn, .generate-kta-btn {
+    background-color: var(--info-blue);
+    color: white;
+    border: none;
+    padding: 0.7rem 1rem; /* Padding lebih besar */
+    border-radius: var(--border-radius); /* Lebih membulat */
+    cursor: pointer;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem; /* Gap lebih besar */
+    text-decoration: none;
+    margin: 5px 0; /* Margin vertikal untuk jarak antar tombol */
+    white-space: nowrap;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.generate-kta-btn {
+    background-color: var(--gojek-green);
+}
+.view-docs-btn:hover { background-color: #117a8b; transform: translateY(-2px); }
+.generate-kta-btn:hover { background-color: #008000; transform: translateY(-2px); }
+
+/* Separator */
+hr {
+    border: 0;
+    height: 1px;
+    background-color: var(--border-color);
+    margin: calc(var(--spacing-unit) * 3) 0; /* Margin lebih besar */
+}
+
+/* Modal Styling */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1002;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.6);
+    padding-top: calc(var(--spacing-unit) * 3);
+    animation: fadeIn 0.3s ease-out;
+}
+.modal-content {
+    background-color: var(--off-white);
+    margin: 5vh auto;
+    padding: calc(var(--spacing-unit) * 2.5); /* Padding lebih besar */
+    border: 1px solid #888;
+    width: 90%;
+    max-width: 750px; /* Lebar maksimum lebih besar */
+    border-radius: var(--border-radius);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2); /* Bayangan lebih dalam */
+    position: relative;
+    animation: slideInFromTop 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Animasi slide */
+    text-align: left;
+}
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 2.2rem; /* Ukuran lebih besar */
+    font-weight: bold;
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+.close-button:hover,
+.close-button:focus {
+    color: var(--danger-red); /* Warna merah saat hover */
+}
+.modal-body p {
+    margin-bottom: 0.6rem;
+    line-height: 1.5;
+    font-size: 0.98rem;
+    color: var(--text-color);
+}
+.modal-body strong {
+    color: var(--dark-gray);
+    min-width: 160px; /* Lebar minimum untuk label */
+    display: inline-block;
+    font-weight: 600;
+}
+.modal-body h3, .modal-body h4 {
+    color: var(--primary-red);
+    margin-top: calc(var(--spacing-unit) * 2);
+    margin-bottom: var(--spacing-unit);
+    font-size: 1.3em;
+    border-bottom: 1px solid var(--light-border);
+    padding-bottom: 0.5rem;
+}
+.document-section {
+    margin-top: calc(var(--spacing-unit) * 1.5);
+    border: 1px dashed var(--border-color);
+    padding: var(--spacing-unit);
+    border-radius: var(--border-radius);
+    background-color: #fbfbfb;
+}
+.document-section p {
+    margin-bottom: 0.8rem;
+}
+.document-link {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 0.5rem;
+    padding: 0.6rem 1rem;
+    background-color: var(--accent-blue); /* Menggunakan accent-blue */
+    color: white;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,123,255,0.2);
+}
+.document-link:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+.document-link i {
+    margin-right: 0.5rem;
+}
+.photo-preview {
+    max-width: 10rem; /* Ukuran preview lebih besar */
+    max-height: 10rem;
+    display: block;
+    margin: 1rem 0;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    object-fit: cover;
+    box-shadow: var(--shadow-light);
+}
+.attendance-photo-preview {
+    max-width: 6rem;
+    max-height: 6rem;
+    display: block;
+    margin: 0.5rem 0;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    object-fit: cover;
+    box-shadow: var(--shadow-light);
+}
+
+/* Form Styles within Modal */
+.modal-content .form-group {
+    margin-bottom: calc(var(--spacing-unit) * 1.2);
+}
+.modal-content .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--dark-gray);
+    font-size: 1rem;
+}
+.modal-content .form-group input[type="password"] {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 1em;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+}
+.modal-content .form-group input[type="password"]:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(0,123,255,0.25);
+}
+.modal-content .button-primary {
+    background-color: var(--primary-red);
+    color: white;
+    padding: 0.9rem 1.8rem;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 1.05rem;
+    font-weight: 600;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-top: 1rem;
+    box-shadow: 0 3px 10px rgba(230,0,0,0.2);
+}
+.modal-content .button-primary:hover {
+    background-color: #c00;
+    transform: translateY(-2px);
+}
+
+
+/* Export Report Section */
+.export-section {
+    background-color: white;
+    padding: calc(var(--spacing-unit) * 1.8);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-light);
+    margin-bottom: calc(var(--spacing-unit) * 2);
+    text-align: left;
+    margin-top: calc(var(--spacing-unit) * 1.5);
+}
+.export-section h2 {
+    font-size: 1.3rem;
+    margin-bottom: var(--spacing-unit);
+    border-bottom: 1px solid var(--light-border);
+    padding-bottom: 0.5rem;
+    color: var(--dark-gray);
+}
+.export-form-unified .form-group {
+    margin-bottom: 1rem;
+}
+.export-form-unified label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--dark-gray);
+    font-size: 0.95rem;
+}
+.export-form-unified select,
+.export-form-unified input[type="date"] {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    box-sizing: border-box;
+    background-color: white;
+    transition: all 0.2s ease;
+}
+.export-form-unified select:focus,
+.export-form-unified input[type="date"]:focus {
+    border-color: var(--accent-blue);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0,123,255,0.25);
+}
+.export-form-unified .filter-group {
+    border: 1px dashed var(--light-border);
+    padding: calc(var(--spacing-unit) * 1.2);
+    border-radius: var(--border-radius);
+    margin-top: calc(var(--spacing-unit) * 1.5);
+    background-color: #fbfbfb;
+    display: none;
+}
+.export-form-unified .filter-group h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: var(--accent-blue); /* Info blue untuk filter */
+    font-size: 1.15rem;
+    border-bottom: 1px solid var(--light-border);
+    padding-bottom: 0.5rem;
+}
+
+.export-button-main {
+    background-color: var(--primary-red);
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-top: calc(var(--spacing-unit) * 1.5);
+    box-shadow: 0 3px 10px rgba(230,0,0,0.2);
+}
+.export-button-main:hover {
+    background-color: #c00;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(230,0,0,0.3);
+}
+
+/* Bottom Navigation Bar (Fixed for Mobile) */
+.bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: white;
+    padding: 0.8rem 0; /* Padding lebih besar */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.1); /* Bayangan lebih jelas */
+    z-index: 1000;
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+}
+.bottom-nav .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--light-text-color); /* Warna teks lebih halus */
+    font-size: 0.78em; /* Ukuran font sedikit lebih besar */
+    font-weight: 500;
+    padding: 0.5rem;
+    flex: 1;
+    transition: color 0.3s ease, transform 0.2s ease, background-color 0.2s ease;
+    border-radius: 5px; /* Radius untuk hover/active */
+}
+.bottom-nav .nav-item i {
+    font-size: 1.5em; /* Ukuran ikon lebih besar */
+    margin-bottom: 0.4rem;
+}
+.bottom-nav .nav-item.active {
+    color: var(--primary-red);
+    transform: translateY(-5px); /* Efek 'naik' saat aktif */
+    background-color: #fff0f0; /* Latar belakang lembut saat aktif */
+    box-shadow: 0 2px 8px rgba(230,0,0,0.1);
+}
+.bottom-nav .nav-item:hover {
+    color: var(--primary-red);
+    background-color: #f9f9f9;
+}
+
+/* Profile Section */
+.profile-section {
+    background-color: white;
+    padding: calc(var(--spacing-unit) * 2);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-light);
+    margin-top: calc(var(--spacing-unit) * 1.5);
+    text-align: left;
+    max-width: 550px; /* Lebar maksimum lebih besar */
+    margin-left: auto;
+    margin-right: auto;
+}
+.profile-info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Rata tengah vertikal */
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px dashed var(--light-border);
+    font-size: 1rem;
+}
+.profile-info-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+.profile-info-item strong {
+    color: var(--dark-gray);
+    font-weight: 600;
+}
+.profile-info-item span {
+    color: var(--light-text-color);
+}
+.logout-btn {
+    background-color: var(--danger-red);
+    color: white;
+    padding: 0.9rem 1.8rem;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    margin-top: calc(var(--spacing-unit) * 2);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    width: auto;
+    justify-content: center;
+    font-size: 1.05rem;
+    font-weight: 600;
+    box-shadow: 0 3px 10px rgba(220,53,69,0.2);
+}
+.logout-btn:hover {
+    background-color: #a00;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(220,53,69,0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: var(--spacing-unit) calc(var(--spacing-unit) * 0.8);
+    }
+    .header .logo {
+        font-size: 1.1rem;
+    }
+    .header .logo img {
+        height: 2.2rem;
+        margin-right: 0.6rem;
+    }
+    .admin-controls {
+        margin-top: 0.6rem;
+        width: 100%;
+        justify-content: space-between;
+    }
+    .admin-controls span {
+        font-size: 0.8rem;
+        flex-grow: 1;
+        text-align: right;
+    }
+
+    .container {
+        padding: var(--spacing-unit);
+        margin: var(--spacing-unit) auto calc(var(--spacing-unit) * 5) auto; /* Adjust for mobile nav */
+    }
+
+    h1, h2, h3 {
+        font-size: 1.5rem; /* Ukuran heading lebih kecil */
+        justify-content: center;
+        text-align: center;
+        margin-bottom: var(--spacing-unit);
+        padding-bottom: 0.3rem;
+    }
+    h1 i, h2 i, h3 i {
+        margin-right: 0.5rem;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-unit);
+    }
+    .dashboard-card {
+        padding: var(--spacing-unit);
+    }
+    .dashboard-card .icon {
+        font-size: 3rem;
+        margin-bottom: 0.6rem;
+    }
+    .dashboard-card h3 {
+        font-size: 1rem;
+    }
+    .dashboard-card .count {
+        font-size: 2.5rem;
+    }
+
+    .table-responsive {
+        border-radius: var(--border-radius); /* Konsisten dengan card */
+        overflow-x: auto;
+    }
+    table {
+        min-width: unset; /* Izinkan tabel menyusut */
+        font-size: 0.85em;
+    }
+    table thead {
+        display: none;
+    }
+    table, table tbody, table tr, table td {
+        display: block;
+        width: 100%;
+    }
+    table tr {
+        margin-bottom: 10px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    table td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+        border: none;
+        border-bottom: 1px solid var(--light-border);
+    }
+    table td:last-child {
+        border-bottom: none;
+    }
+    table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        width: calc(50% - 20px);
+        text-align: left;
+        font-weight: bold;
+        color: var(--dark-gray);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    /* Specific data-label content for responsive tables */
+    table#allApplicantsTable td:nth-of-type(1)::before { content: "ID"; }
+    table#allApplicantsTable td:nth-of-type(2)::before { content: "Nama"; }
+    table#allApplicantsTable td:nth-of-type(3)::before { content: "Lahir"; }
+    table#allApplicantsTable td:nth-of-type(4)::before { content: "Alamat"; }
+    table#allApplicantsTable td:nth-of-type(5)::before { content: "WA"; }
+    table#allApplicantsTable td:nth-of-type(6)::before { content: "Email"; }
+    table#allApplicantsTable td:nth-of-type(7)::before { content: "Pendidikan"; }
+    table#allApplicantsTable td:nth-of-type(8)::before { content: "Kelas"; }
+    table#allApplicantsTable td:nth-of-type(9)::before { content: "Kampus"; }
+    table#allApplicantsTable td:nth-of-type(10)::before { content: "Tgl Daftar"; }
+    table#allApplicantsTable td:nth-of-type(11)::before { content: "Status"; }
+    table#allApplicantsTable td:nth-of-type(12)::before { content: "Aksi"; }
+    table#allApplicantsTable td:nth-of-type(13)::before { content: "Detail"; }
+    table#allApplicantsTable td:nth-of-type(14)::before { content: "KTA"; }
+
+    table#approvedApplicantsTable td:nth-of-type(1)::before { content: "ID"; }
+    table#approvedApplicantsTable td:nth-of-type(2)::before { content: "Nama"; }
+    table#approvedApplicantsTable td:nth-of-type(3)::before { content: "KTA"; }
+    table#approvedApplicantsTable td:nth-of-type(4)::before { content: "Email"; }
+    table#approvedApplicantsTable td:nth-of-type(5)::before { content: "WA"; }
+    table#approvedApplicantsTable td:nth-of-type(6)::before { content: "Kampus"; }
+    table#approvedApplicantsTable td:nth-of-type(7)::before { content: "Kelas"; }
+    table#approvedApplicantsTable td:nth-of-type(8)::before { content: "Tgl Daftar"; }
+    table#approvedApplicantsTable td:nth-of-type(9)::before { content: "Aksi"; }
+
+    table#rejectedApplicantsTable td:nth-of-type(1)::before { content: "ID"; }
+    table#rejectedApplicantsTable td:nth-of-type(2)::before { content: "Nama"; }
+    table#rejectedApplicantsTable td:nth-of-type(3)::before { content: "Email"; }
+    table#rejectedApplicantsTable td:nth-of-type(4)::before { content: "WA"; }
+    table#rejectedApplicantsTable td:nth-of-type(5)::before { content: "Kampus"; }
+    table#rejectedApplicantsTable td:nth-of-type(6)::before { content: "Kelas"; }
+    table#rejectedApplicantsTable td:nth-of-type(7)::before { content: "Tgl Daftar"; }
+
+    table#attendanceTable td:nth-of-type(1)::before { content: "ID Absensi"; }
+    table#attendanceTable td:nth-of-type(2)::before { content: "Nama"; }
+    table#attendanceTable td:nth-of-type(3)::before { content: "KTA"; }
+    table#attendanceTable td:nth-of-type(4)::before { content: "Kelas"; }
+    table#attendanceTable td:nth-of-type(5)::before { content: "Kampus"; }
+    table#attendanceTable td:nth-of-type(6)::before { content: "Tanggal"; }
+    table#attendanceTable td:nth-of-type(7)::before { content: "Waktu"; }
+    table#attendanceTable td:nth-of-type(8)::before { content: "Status"; }
+    table#attendanceTable td:nth-of-type(9)::before { content: "Keterangan"; }
+    table#attendanceTable td:nth-of-type(10)::before { content: "Foto"; }
+
+    table#usersTable td:nth-of-type(1)::before { content: "ID"; }
+    table#usersTable td:nth-of-type(2)::before { content: "Username"; }
+    table#usersTable td:nth-of-type(3)::before { content: "Email"; }
+    table#usersTable td:nth-of-type(4)::before { content: "Peran"; }
+    table#usersTable td:nth-of-type(5)::before { content: "Terdaftar Sejak"; }
+    table#usersTable td:nth-of-type(6)::before { content: "Aksi"; }
+
+    .modal-content {
+        width: 95%;
+        margin: 20px auto;
+        padding: calc(var(--spacing-unit) * 1.5);
+    }
+    .export-form-unified .form-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .export-form-unified label {
+        width: auto;
+        text-align: left;
+    }
+    .export-button-main {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* DataTables specific responsive adjustments */
+    div.dataTables_wrapper div.dataTables_filter {
+        text-align: left; /* Pindahkan search ke kiri */
+    }
+    div.dataTables_wrapper div.dataTables_filter input {
+        width: 100%; /* Lebar penuh */
+        max-width: 300px;
+        margin-top: 5px;
+    }
+    div.dataTables_wrapper div.dataTables_length,
+    div.dataTables_wrapper div.dataTables_info,
+    div.dataTables_wrapper div.dataTables_paginate {
+        text-align: center; /* Rata tengah pagination/info */
+    }
+    .table-filter-controls {
+        flex-direction: column;
+        align-items: stretch; /* Regangkan item agar penuh */
+    }
+    .table-filter-controls input[type="text"],
+    .table-filter-controls select,
+    .table-filter-controls .refresh-button {
+        width: 100%; /* Penuh */
+        max-width: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .header .logo {
+        font-size: 1em;
+    }
+    .header .logo img {
+        height: 2rem;
+    }
+    .admin-controls {
+        font-size: 0.8em;
+    }
+    .bottom-nav .nav-item {
+        font-size: 0.65em;
+    }
+    .bottom-nav .nav-item i {
+        font-size: 1.1em;
+    }
+}
+
+/* Animasi */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes fadeInScale {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+@keyframes slideInFromTop {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* DataTables specific styles for search, length, pagination */
+.dataTables_wrapper .dataTables_filter {
+    text-align: right;
+    margin-bottom: 1rem;
+}
+.dataTables_wrapper .dataTables_filter input {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 0.6rem 1rem;
+    width: 250px;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+.dataTables_wrapper .dataTables_filter input:focus {
+    border-color: var(--accent-blue);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0,123,255,0.15);
+}
+
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_paginate {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    color: var(--light-text-color);
+    font-size: 0.9rem;
+}
+.dataTables_wrapper .dataTables_paginate {
+    text-align: right;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    padding: 0.6em 1em;
+    margin-left: 2px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background-color: white;
+    cursor: pointer;
+    color: var(--dark-gray);
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    background-color: var(--primary-red);
+    color: white;
+    border-color: var(--primary-red);
+    box-shadow: var(--shadow-light);
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button:not(.current):hover {
+    background-color: #f0f0f0;
+    border-color: #c0c0c0;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+    color: #ccc;
+    cursor: not-allowed;
+    background-color: #fefefe;
+    box-shadow: none;
+}
+/* Custom filter controls for user management table */
+.table-filter-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: calc(var(--spacing-unit) * 1.5);
+    align-items: center;
+}
+.table-filter-controls input[type="text"],
+.table-filter-controls select {
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    flex: 1;
+    min-width: 180px;
+    box-sizing: border-box;
+    font-size: 0.95rem;
+    background-color: white;
+    transition: all 0.2s ease;
+}
+.table-filter-controls input[type="text"]:focus,
+.table-filter-controls select:focus {
+    border-color: var(--accent-blue);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0,123,255,0.2);
+}
+
+.table-filter-controls .refresh-button {
+    background-color: var(--info-blue);
+    color: white;
+    padding: 0.7rem 1.2rem;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 8px rgba(23,162,184,0.2);
+}
+.table-filter-controls .refresh-button:hover {
+    background-color: #117a8b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(23,162,184,0.3);
+}
+
+/* Styling for action buttons in user management table */
+.button-reset-password,
+.button-delete-user {
+    padding: 0.6rem 0.9rem; /* Padding lebih besar */
+    border: none;
+    border-radius: 5px; /* Radius lebih kecil agar berbeda dengan tombol utama */
+    cursor: pointer;
+    font-size: 0.85rem;
+    margin-right: 0.5rem;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    white-space: nowrap;
+}
+.button-reset-password {
+    background-color: var(--dark-gray);
+    color: white;
+}
+.button-reset-password:hover {
+    background-color: #5a6268;
+    transform: translateY(-1px);
+}
+.button-delete-user {
+    background-color: var(--danger-red);
+    color: white;
+}
+.button-delete-user:hover {
+    background-color: #c82333;
+    transform: translateY(-1px);
+}

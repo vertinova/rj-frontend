@@ -1,0 +1,212 @@
+/* General Body & Background */
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden; /* Mencegah scrollbar dari animasi background */
+    background: linear-gradient(135deg, #da1d0c, #e1251f, #071f07, #9f1e14, #19143f);
+    background-size: 400% 400%; /* Memperbesar ukuran background untuk animasi */
+    animation: gradientBackground 15s ease infinite; /* Animasi gradien */
+    color: #333;
+}
+
+/* Keyframe untuk animasi background */
+@keyframes gradientBackground {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Container untuk posisi kotak login */
+.login-container {
+    perspective: 1000px; /* Untuk efek 3D halus jika diinginkan */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* Kotak Login (Kartu) */
+.login-box {
+    background: rgba(255, 255, 255, 0.9); /* Putih sedikit transparan */
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2); /* Bayangan untuk efek kedalaman */
+    width: 380px;
+    max-width: 90%; /* Pastikan responsif pada layar kecil */
+    text-align: center;
+    backdrop-filter: blur(8px); /* Efek kaca buram (glassmorphism) */
+    -webkit-backdrop-filter: blur(8px); /* Dukungan Safari */
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Border halus */
+    transform: translateY(0);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-box:hover {
+    transform: translateY(-5px); /* Efek naik saat dihover */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Logo dan Judul */
+.logo img {
+    max-width: 100px;
+    margin-bottom: 15px;
+}
+
+.logo h2 {
+    font-size: 2.2em;
+    color: #2c3e50; /* Warna teks yang kuat */
+    margin-bottom: 5px;
+    font-weight: 700;
+}
+
+.logo p {
+    font-size: 1em;
+    color: #7f8c8d;
+    margin-bottom: 30px;
+}
+
+/* Styling Input Group */
+.input-group {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.input-group i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #95a5a6; /* Warna ikon default */
+    font-size: 1.1em;
+    transition: color 0.3s ease;
+}
+
+.input-group input {
+    width: calc(100% - 60px); /* Sesuaikan lebar untuk ikon dan padding */
+    padding: 12px 15px 12px 45px; /* Padding kiri untuk ikon */
+    border: 1px solid #dfe6e9;
+    border-radius: 10px;
+    font-size: 1em;
+    outline: none; /* Hilangkan outline default pada fokus */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-group input:focus {
+    border-color: #3498db; /* Warna border saat fokus */
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3); /* Bayangan biru saat fokus */
+}
+
+/* Style untuk input dengan error */
+.input-group.has-error input {
+    border-color: #e74c3c; /* Border merah untuk error */
+}
+
+/* Warna ikon berubah saat input fokus */
+.input-group input:focus + i { 
+    color: #3498db;
+}
+
+/* Pesan Error */
+.help-block {
+    color: #e74c3c; /* Warna merah untuk pesan error */
+    font-size: 0.85em;
+    margin-top: 5px;
+    display: block;
+    text-align: left; /* Sesuaikan posisi teks error */
+    padding-left: 45px; /* Sejajarkan dengan teks input */
+}
+
+/* Pesan alert error umum */
+.alert.error {
+    background-color: #fce7e7; /* Background merah muda */
+    color: #e74c3c;
+    border: 1px solid #e74c3c;
+    padding: 10px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 0.95em;
+    text-align: left;
+}
+
+/* Tombol Login */
+.btn-login {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(45deg, #3498db, #2980b9); /* Gradien biru untuk tombol */
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.2em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 1px; /* Jarak antar huruf */
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3); /* Bayangan tombol */
+}
+
+.btn-login:hover {
+    background: linear-gradient(45deg, #2980b9, #3498db); /* Perubahan gradien saat hover */
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+    transform: translateY(-2px); /* Efek naik saat hover */
+}
+
+.btn-login:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 10px rgba(52, 152, 219, 0.2);
+}
+
+/* Link Daftar */
+.register-link {
+    margin-top: 30px;
+    font-size: 0.95em;
+    color: #7f8c8d;
+}
+
+.register-link a {
+    color: #3498db; /* Warna biru untuk link */
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.register-link a:hover {
+    color: #2980b9;
+    text-decoration: underline;
+}
+
+/* Penyesuaian Responsif untuk layar kecil */
+@media (max-width: 480px) {
+    .login-box {
+        width: 90%; /* Lebar yang lebih kecil */
+        padding: 30px 20px;
+        margin: 20px; /* Margin agar tidak terlalu mepet tepi */
+    }
+
+    .logo h2 {
+        font-size: 1.8em;
+    }
+
+    .input-group input {
+        padding: 10px 15px 10px 40px; /* Padding disesuaikan */
+    }
+
+    .input-group i {
+        left: 10px;
+        font-size: 1em;
+    }
+    
+    .help-block {
+        padding-left: 40px; /* Padding disesuaikan */
+    }
+
+    .btn-login {
+        font-size: 1.1em;
+        padding: 12px;
+    }
+}

@@ -1,0 +1,30 @@
+.not-found-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.not-found-content {
+  text-align: center;
+  color: white;
+  padding: 2rem;
+}
+
+.not-found-content h1 {
+  font-size: 8rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.not-found-content h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.not-found-content p {
+  font-size: 1.25rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
