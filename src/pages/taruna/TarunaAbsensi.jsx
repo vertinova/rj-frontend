@@ -20,6 +20,7 @@ const TarunaAbsensi = () => {
   const [missingFields, setMissingFields] = useState([]);
   const [formData, setFormData] = useState({
     status_absensi: 'hadir',
+    tipe_absensi: 'datang',
     kampus: '',
     keterangan: '',
     foto_absensi: null
@@ -96,6 +97,7 @@ const TarunaAbsensi = () => {
     const submitData = new FormData();
     submitData.append('tanggal_absensi', new Date().toISOString().split('T')[0]);
     submitData.append('status_absensi', formData.status_absensi);
+    submitData.append('tipe_absensi', formData.tipe_absensi);
     
     if (formData.status_absensi === 'hadir') {
       submitData.append('kampus', formData.kampus);
@@ -105,11 +107,13 @@ const TarunaAbsensi = () => {
     }
 
     try {
-      await tarunaService.submitAbsensi(submitData);
-      toast.success('Absensi berhasil dicatat!');
+      const response = await tarunaService.submitAbsensi(submitData);
+      const tipeLabel = formData.tipe_absensi === 'datang' ? 'Absen Latihan' : 'Absen Pulang';
+      toast.success(response.message || `${tipeLabel} berhasil dicatat!`);
       setShowForm(false);
       setFormData({
         status_absensi: 'hadir',
+        tipe_absensi: 'datang',
         kampus: '',
         keterangan: '',
         foto_absensi: null
@@ -404,6 +408,72 @@ const TarunaAbsensi = () => {
           </h3>
 
           <form onSubmit={handleSubmit}>
+            {/* Tipe Absensi Section */}
+            <div style={{ marginBottom: '25px', padding: '20px', background: 'linear-gradient(135deg, rgba(243, 156, 18, 0.1) 0%, rgba(230, 126, 34, 0.1) 100%)', borderRadius: '15px', border: '2px solid rgba(243, 156, 18, 0.3)' }}>
+              <label style={{ ...labelStyle, marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <i className="fas fa-clock" style={{ color: '#f39c12' }}></i>
+                Tipe Absensi <span style={{ color: '#e74c3c' }}>*</span>
+              </label>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                <label style={{
+                  padding: '15px 20px',
+                  borderRadius: '12px',
+                  border: formData.tipe_absensi === 'datang' ? '2px solid #f39c12' : '2px solid rgba(255, 255, 255, 0.1)',
+                  background: formData.tipe_absensi === 'datang' ? 'linear-gradient(135deg, rgba(243, 156, 18, 0.2) 0%, rgba(230, 126, 34, 0.2) 100%)' : 'rgba(255, 255, 255, 0.05)',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px'
+                }}>
+                  <input
+                    type="radio"
+                    name="tipe_absensi"
+                    value="datang"
+                    checked={formData.tipe_absensi === 'datang'}
+                    onChange={handleInputChange}
+                    style={{ width: '20px', height: '20px', cursor: 'pointer', accentColor: '#f39c12' }}
+                  />
+                  <div>
+                    <div style={{ fontSize: '1.1rem', fontWeight: '600', color: 'white', marginBottom: '3px' }}>
+                      🟢 Absen Latihan
+                    </div>
+                    <div style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.6)' }}>
+                      Saat tiba di lokasi
+                    </div>
+                  </div>
+                </label>
+                <label style={{
+                  padding: '15px 20px',
+                  borderRadius: '12px',
+                  border: formData.tipe_absensi === 'pulang' ? '2px solid #e74c3c' : '2px solid rgba(255, 255, 255, 0.1)',
+                  background: formData.tipe_absensi === 'pulang' ? 'linear-gradient(135deg, rgba(231, 76, 60, 0.2) 0%, rgba(192, 57, 43, 0.2) 100%)' : 'rgba(255, 255, 255, 0.05)',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px'
+                }}>
+                  <input
+                    type="radio"
+                    name="tipe_absensi"
+                    value="pulang"
+                    checked={formData.tipe_absensi === 'pulang'}
+                    onChange={handleInputChange}
+                    style={{ width: '20px', height: '20px', cursor: 'pointer', accentColor: '#e74c3c' }}
+                  />
+                  <div>
+                    <div style={{ fontSize: '1.1rem', fontWeight: '600', color: 'white', marginBottom: '3px' }}>
+                      🔴 Absen Pulang
+                    </div>
+                    <div style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.6)' }}>
+                      Setelah selesai latihan
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
             <div style={{ marginBottom: '20px' }}>
               <label style={labelStyle}>Status Absensi <span style={{ color: '#e74c3c' }}>*</span></label>
               <select
@@ -616,7 +686,16 @@ const AbsensiCard = ({ data }) => {
     return badges[status] || badges.alpha;
   };
 
+  const getTipeBadge = (tipe) => {
+    const badges = {
+      'datang': { color: '#27ae60', icon: '🟢', label: 'Absen Latihan' },
+      'pulang': { color: '#e74c3c', icon: '🔴', label: 'Absen Pulang' }
+    };
+    return badges[tipe] || badges.datang;
+  };
+
   const badge = getStatusBadge(data.status_absensi);
+  const tipeBadge = getTipeBadge(data.tipe_absensi);
   const date = new Date(data.tanggal_absensi);
 
   return (
@@ -654,6 +733,21 @@ const AbsensiCard = ({ data }) => {
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px', flexWrap: 'wrap' }}>
           <span style={{ 
+            background: `${tipeBadge.color}22`,
+            color: tipeBadge.color,
+            padding: '5px 14px',
+            borderRadius: '8px',
+            fontSize: '0.85rem',
+            fontWeight: '700',
+            border: `1px solid ${tipeBadge.color}44`,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px'
+          }}>
+            <span>{tipeBadge.icon}</span>
+            {tipeBadge.label}
+          </span>
+          <span style={{ 
             background: `${badge.color}22`,
             color: badge.color,
             padding: '4px 12px',
@@ -666,6 +760,22 @@ const AbsensiCard = ({ data }) => {
           <span style={{ color: 'rgba(255, 255, 255, 0.6)', fontSize: '0.9rem' }}>
             {date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
           </span>
+          {data.waktu_absensi && (
+            <span style={{ 
+              background: 'rgba(155, 89, 182, 0.2)',
+              color: '#9b59b6',
+              padding: '4px 10px',
+              borderRadius: '6px',
+              fontSize: '0.8rem',
+              fontWeight: '600',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px'
+            }}>
+              <i className="fas fa-clock" style={{ fontSize: '0.75rem' }}></i>
+              {data.waktu_absensi}
+            </span>
+          )}
         </div>
         {data.kampus && (
           <div style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '0.95rem', marginBottom: '4px' }}>

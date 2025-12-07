@@ -1136,12 +1136,46 @@ const Home = () => {
               fontSize: '1.3rem', 
               textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)', 
               animation: 'fadeIn 2s ease-out', 
-              marginBottom: '40px',
+              marginBottom: '30px',
               opacity: 0.9,
               lineHeight: '1.5'
             }}>
               Membentuk Karakter, Membangun Prestasi
             </p>
+            
+            {/* Login Button - Only shows in PWA mode */}
+            {isPWA && (
+              <Link 
+                to="/login" 
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  padding: '15px 35px',
+                  background: 'linear-gradient(135deg, #f39c12 0%, #e67e22 100%)',
+                  color: 'white',
+                  textDecoration: 'none',
+                  borderRadius: '50px',
+                  fontSize: '1.1rem',
+                  fontWeight: '600',
+                  boxShadow: '0 8px 20px rgba(243, 156, 18, 0.4)',
+                  transition: 'all 0.3s ease',
+                  animation: 'fadeIn 2.5s ease-out',
+                  border: '2px solid rgba(255, 255, 255, 0.2)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-3px)';
+                  e.currentTarget.style.boxShadow = '0 12px 30px rgba(243, 156, 18, 0.6)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 8px 20px rgba(243, 156, 18, 0.4)';
+                }}
+              >
+                <i className="fas fa-sign-in-alt"></i>
+                Masuk ke Sistem
+              </Link>
+            )}
           </div>
 
           {/* Right Image */}
@@ -1183,14 +1217,6 @@ const Home = () => {
           <i className="fas fa-chevron-down" style={{ fontSize: '20px' }}></i>
         </div>
       </section>
-
-      {/* PWA Login Button - Only shows in PWA mode */}
-      {isPWA && (
-        <Link to="/login" className="pwa-login-btn">
-          <i className="fas fa-sign-in-alt"></i>
-          Masuk ke Sistem
-        </Link>
-      )}
 
       {/* About Section */}
       <section 
