@@ -6,6 +6,10 @@ import { useAuth } from './context/AuthContext'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import RegisterLakaraja from './pages/RegisterLakaraja'
+import LoginLakaraja from './pages/LoginLakaraja'
+import LakarajaDashboard from './pages/lakaraja/LakarajaDashboard'
+import PanitiaDashboard from './pages/lakaraja/PanitiaDashboard'
 import TarunaDashboard from './pages/taruna/TarunaDashboard'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import NotFound from './pages/NotFound'
@@ -157,6 +161,24 @@ function App() {
               <Register />
             </PublicRoute>
           } 
+        />
+        
+        {/* Lakaraja Routes */}
+        <Route 
+          path="/lakaraja/register" 
+          element={<RegisterLakaraja />} 
+        />
+        <Route 
+          path="/lakaraja/login" 
+          element={<LoginLakaraja />} 
+        />
+        <Route 
+          path="/lakaraja/dashboard" 
+          element={<LakarajaDashboard />} 
+        />
+        <Route 
+          path="/lakaraja/panitia" 
+          element={<PanitiaDashboard />} 
         />
 
         {/* Taruna Routes */}

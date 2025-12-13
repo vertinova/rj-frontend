@@ -1059,6 +1059,16 @@ const Home = () => {
               <i className="fas fa-images"></i>
             </a>
           </li>
+          <li>
+            <a 
+              href="#lakaraja" 
+              onClick={(e) => moveProfile(e, '#lakaraja')} 
+              className={activeSection === 'lakaraja' ? 'active' : ''}
+              title="Lakaraja"
+            >
+              <i className="fas fa-trophy"></i>
+            </a>
+          </li>
           {showInstallButton && (
             <li>
               <a 
@@ -1693,7 +1703,287 @@ const Home = () => {
         )}
       </section>
 
+      {/* Lakaraja Section */}
+      <section 
+        id="lakaraja"
+        style={{
+          minHeight: '100vh',
+          padding: '8rem 2rem',
+          position: 'relative',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'linear-gradient(180deg, transparent 0%, rgba(243, 156, 18, 0.05) 100%)',
+          overflow: 'hidden'
+        }}
+      >
+        {/* Background Decorations */}
+        <div style={{
+          position: 'absolute',
+          top: '10%',
+          right: '10%',
+          width: '300px',
+          height: '300px',
+          background: 'radial-gradient(circle, rgba(243, 156, 18, 0.1) 0%, transparent 70%)',
+          borderRadius: '50%',
+          filter: 'blur(60px)',
+          animation: 'float 6s ease-in-out infinite'
+        }} />
+        <div style={{
+          position: 'absolute',
+          bottom: '10%',
+          left: '10%',
+          width: '250px',
+          height: '250px',
+          background: 'radial-gradient(circle, rgba(230, 126, 34, 0.1) 0%, transparent 70%)',
+          borderRadius: '50%',
+          filter: 'blur(60px)',
+          animation: 'float 8s ease-in-out infinite reverse'
+        }} />
 
+        <div style={{
+          maxWidth: '1200px',
+          width: '100%',
+          textAlign: 'center',
+          position: 'relative',
+          zIndex: 1
+        }}>
+          {/* Section Header */}
+          <div style={{
+            marginBottom: '4rem',
+            animation: 'fadeIn 1s ease-out'
+          }}>
+            <h2 style={{
+              fontSize: '3.5rem',
+              fontWeight: '800',
+              marginBottom: '1.5rem',
+              background: 'linear-gradient(135deg, #f39c12 0%, #e74c3c 50%, #c0392b 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              letterSpacing: '-1px',
+              textTransform: 'uppercase'
+            }}>
+              Lakaraja 2026
+            </h2>
+            <p style={{
+              fontSize: '1.3rem',
+              color: '#f39c12',
+              fontWeight: '600',
+              marginBottom: '1rem',
+              letterSpacing: '2px'
+            }}>
+              Lomba Baris Berbaris
+            </p>
+            <div style={{
+              width: '80px',
+              height: '4px',
+              background: 'linear-gradient(90deg, transparent, #f39c12, transparent)',
+              margin: '0 auto'
+            }} />
+          </div>
+
+          {/* Main Content */}
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(243, 156, 18, 0.1) 0%, rgba(230, 126, 34, 0.05) 100%)',
+            padding: '3rem 2rem',
+            borderRadius: '20px',
+            border: '1px solid rgba(243, 156, 18, 0.2)',
+            backdropFilter: 'blur(10px)',
+            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+            marginBottom: '3rem',
+            animation: 'fadeInScale 1.2s ease-out'
+          }}>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+              gap: '2rem',
+              marginBottom: '2.5rem'
+            }}>
+              {/* Info Item 1 */}
+              <div style={{
+                padding: '1.5rem',
+                background: 'rgba(0, 0, 0, 0.2)',
+                borderRadius: '15px',
+                border: '1px solid rgba(243, 156, 18, 0.3)',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-5px)';
+                e.currentTarget.style.borderColor = '#f39c12';
+                e.currentTarget.style.boxShadow = '0 10px 30px rgba(243, 156, 18, 0.3)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.borderColor = 'rgba(243, 156, 18, 0.3)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}>
+                <i className="fas fa-trophy" style={{
+                  fontSize: '2.5rem',
+                  color: '#f39c12',
+                  marginBottom: '1rem',
+                  display: 'block'
+                }}></i>
+                <h3 style={{
+                  color: 'white',
+                  fontSize: '1.2rem',
+                  marginBottom: '0.5rem',
+                  fontWeight: '600'
+                }}>Kompetisi Bergengsi</h3>
+                <p style={{
+                  color: 'rgba(255, 255, 255, 0.7)',
+                  fontSize: '0.95rem',
+                  lineHeight: '1.6'
+                }}>
+                  Ajang kompetisi baris berbaris tingkat regional
+                </p>
+              </div>
+
+              {/* Info Item 2 */}
+              <div style={{
+                padding: '1.5rem',
+                background: 'rgba(0, 0, 0, 0.2)',
+                borderRadius: '15px',
+                border: '1px solid rgba(243, 156, 18, 0.3)',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-5px)';
+                e.currentTarget.style.borderColor = '#f39c12';
+                e.currentTarget.style.boxShadow = '0 10px 30px rgba(243, 156, 18, 0.3)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.borderColor = 'rgba(243, 156, 18, 0.3)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}>
+                <i className="fas fa-calendar-alt" style={{
+                  fontSize: '2.5rem',
+                  color: '#f39c12',
+                  marginBottom: '1rem',
+                  display: 'block'
+                }}></i>
+                <h3 style={{
+                  color: 'white',
+                  fontSize: '1.2rem',
+                  marginBottom: '0.5rem',
+                  fontWeight: '600'
+                }}>Tahun 2026</h3>
+                <p style={{
+                  color: 'rgba(255, 255, 255, 0.7)',
+                  fontSize: '0.95rem',
+                  lineHeight: '1.6'
+                }}>
+                  Event tahunan yang dinanti-nanti
+                </p>
+              </div>
+
+              {/* Info Item 3 */}
+              <div style={{
+                padding: '1.5rem',
+                background: 'rgba(0, 0, 0, 0.2)',
+                borderRadius: '15px',
+                border: '1px solid rgba(243, 156, 18, 0.3)',
+                transition: 'all 0.3s ease'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-5px)';
+                e.currentTarget.style.borderColor = '#f39c12';
+                e.currentTarget.style.boxShadow = '0 10px 30px rgba(243, 156, 18, 0.3)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.borderColor = 'rgba(243, 156, 18, 0.3)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}>
+                <i className="fas fa-users" style={{
+                  fontSize: '2.5rem',
+                  color: '#f39c12',
+                  marginBottom: '1rem',
+                  display: 'block'
+                }}></i>
+                <h3 style={{
+                  color: 'white',
+                  fontSize: '1.2rem',
+                  marginBottom: '0.5rem',
+                  fontWeight: '600'
+                }}>Tim & Individu</h3>
+                <p style={{
+                  color: 'rgba(255, 255, 255, 0.7)',
+                  fontSize: '0.95rem',
+                  lineHeight: '1.6'
+                }}>
+                  Kategori tim dan individu tersedia
+                </p>
+              </div>
+            </div>
+
+            {/* Description */}
+            <p style={{
+              fontSize: '1.1rem',
+              color: 'rgba(255, 255, 255, 0.8)',
+              lineHeight: '1.8',
+              marginBottom: '2.5rem',
+              maxWidth: '800px',
+              margin: '0 auto 2.5rem'
+            }}>
+              <strong style={{ color: '#f39c12' }}>Lakaraja</strong> (Lomba Baris Berbaris Rajawali) adalah kompetisi baris berbaris 
+              bergengsi yang diselenggarakan oleh Paskibra MAN 1 Kabupaten Bogor. Ajang ini menjadi wadah bagi para peserta 
+              untuk menunjukkan kemampuan, kedisiplinan, dan kekompakan dalam baris berbaris.
+            </p>
+
+            {/* CTA Button */}
+            <Link 
+              to="/lakaraja/register"
+              className="glow-btn"
+              style={{
+                display: 'inline-block',
+                padding: '18px 50px',
+                fontSize: '1.2rem',
+                fontWeight: '700',
+                color: 'white',
+                background: 'linear-gradient(135deg, #f39c12 0%, #e74c3c 100%)',
+                border: 'none',
+                borderRadius: '50px',
+                textDecoration: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                boxShadow: '0 10px 30px rgba(243, 156, 18, 0.4)',
+                letterSpacing: '1px',
+                textTransform: 'uppercase'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = 'translateY(-5px) scale(1.05)';
+                e.target.style.boxShadow = '0 15px 40px rgba(243, 156, 18, 0.6)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = 'translateY(0) scale(1)';
+                e.target.style.boxShadow = '0 10px 30px rgba(243, 156, 18, 0.4)';
+              }}
+            >
+              <i className="fas fa-user-plus" style={{ marginRight: '10px' }}></i>
+              Daftar Lakaraja 2026
+            </Link>
+
+            {/* Additional Info */}
+            <div style={{
+              marginTop: '2rem',
+              padding: '1.5rem',
+              background: 'rgba(243, 156, 18, 0.05)',
+              borderRadius: '10px',
+              border: '1px solid rgba(243, 156, 18, 0.15)'
+            }}>
+              <p style={{
+                color: 'rgba(255, 255, 255, 0.6)',
+                fontSize: '0.9rem',
+                margin: 0
+              }}>
+                <i className="fas fa-info-circle" style={{ marginRight: '8px', color: '#f39c12' }}></i>
+                Pendaftaran dibuka untuk umum. Peserta yang terdaftar akan mendapatkan akun khusus untuk mengikuti kompetisi.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Footer */}
       <footer style={{ 

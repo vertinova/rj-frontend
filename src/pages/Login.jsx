@@ -794,6 +794,36 @@ function Login() {
         <div className="register-link">
           Belum punya akun? <Link to="/register">Daftar Sekarang</Link>
         </div>
+
+        {/* Back to Home Link */}
+        <div className="back-to-home" style={{ marginTop: '15px', position: 'relative', zIndex: 10 }}>
+          <Link 
+            to="/" 
+            className="back-home-link"
+            style={{
+              color: 'rgba(255, 255, 255, 0.6)',
+              textDecoration: 'none',
+              fontSize: '14px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              transition: 'all 0.3s ease',
+              position: 'relative',
+              zIndex: 10
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.color = '#f39c12';
+              e.target.style.transform = 'translateX(-3px)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.color = 'rgba(255, 255, 255, 0.6)';
+              e.target.style.transform = 'translateX(0)';
+            }}
+          >
+            <i className="fas fa-arrow-left"></i>
+            Kembali ke Beranda
+          </Link>
+        </div>
       </div>
 
       {/* Font Awesome */}
