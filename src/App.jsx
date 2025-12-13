@@ -10,6 +10,8 @@ import RegisterLakaraja from './pages/RegisterLakaraja'
 import LoginLakaraja from './pages/LoginLakaraja'
 import LakarajaDashboard from './pages/lakaraja/LakarajaDashboard'
 import PanitiaDashboard from './pages/lakaraja/PanitiaDashboard'
+import ManageUsers from './pages/lakaraja/ManageUsers'
+import ManagePendaftaran from './pages/lakaraja/ManagePendaftaran'
 import TarunaDashboard from './pages/taruna/TarunaDashboard'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import NotFound from './pages/NotFound'
@@ -179,6 +181,14 @@ function App() {
         <Route 
           path="/lakaraja/panitia" 
           element={<PanitiaDashboard />} 
+        />
+        <Route 
+          path="/lakaraja/panitia/users" 
+          element={<ManageUsers />} 
+        />
+        <Route 
+          path="/lakaraja/panitia/pendaftaran" 
+          element={<ManagePendaftaran />} 
         />
 
         {/* Taruna Routes */}

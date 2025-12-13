@@ -252,3 +252,187 @@ input, textarea, select {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(to bottom, #7c3aed, #db2777);
 }
+
+/* ========================================
+   Custom Dropdown Styles
+   ======================================== */
+
+/* Base Select Styling */
+select,
+.custom-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23f97316' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px !important;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* Dark Theme Dropdown (for dark backgrounds) */
+select.dark-dropdown,
+.dark-dropdown select {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  border-radius: 0.5rem;
+  padding: 0.625rem 2.5rem 0.625rem 1rem;
+  font-size: 0.875rem;
+  backdrop-filter: blur(10px);
+}
+
+select.dark-dropdown:hover,
+.dark-dropdown select:hover {
+  border-color: rgba(249, 115, 22, 0.5);
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+select.dark-dropdown:focus,
+.dark-dropdown select:focus {
+  border-color: #f97316;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+  outline: none;
+}
+
+/* Dropdown Options Styling */
+select option {
+  background-color: #1a1a1a;
+  color: white;
+  padding: 12px 16px;
+  font-size: 0.875rem;
+}
+
+select option:hover,
+select option:focus,
+select option:checked {
+  background: linear-gradient(to right, rgba(249, 115, 22, 0.3), rgba(249, 115, 22, 0.1));
+  color: #f97316;
+}
+
+select option:disabled {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Tailwind Dark Select Override */
+select[class*="bg-white/5"],
+select[class*="bg-white/10"] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23f97316' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px !important;
+}
+
+select[class*="bg-white/5"]:hover,
+select[class*="bg-white/10"]:hover {
+  border-color: rgba(249, 115, 22, 0.5) !important;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+select[class*="bg-white/5"]:focus,
+select[class*="bg-white/10"]:focus {
+  border-color: #f97316 !important;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+}
+
+/* Animated Dropdown */
+select.animated-dropdown {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+select.animated-dropdown:focus {
+  transform: translateY(-1px);
+}
+
+/* Select with Icon */
+.select-with-icon {
+  position: relative;
+}
+
+.select-with-icon select {
+  padding-left: 2.5rem !important;
+}
+
+.select-with-icon .select-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+  transition: color 0.3s ease;
+}
+
+.select-with-icon:focus-within .select-icon {
+  color: #f97316;
+}
+
+/* Select Sizes */
+select.select-sm {
+  padding: 0.5rem 2rem 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  background-size: 14px;
+  background-position: right 8px center;
+}
+
+select.select-lg {
+  padding: 0.875rem 2.75rem 0.875rem 1.25rem;
+  font-size: 1rem;
+  background-size: 18px;
+  background-position: right 14px center;
+}
+
+/* Select Variants */
+select.select-orange {
+  border-color: rgba(249, 115, 22, 0.3);
+}
+
+select.select-orange:focus {
+  border-color: #f97316;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+}
+
+select.select-blue {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+select.select-blue:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+select.select-green {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2310b981' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+select.select-green:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+/* Disabled State */
+select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* Firefox specific */
+@-moz-document url-prefix() {
+  select {
+    text-indent: 0.01px;
+    text-overflow: '';
+  }
+}
+
+/* Remove default arrow in IE */
+select::-ms-expand {
+  display: none;
+}
+

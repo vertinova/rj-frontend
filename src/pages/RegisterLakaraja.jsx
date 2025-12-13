@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import api from '../services/api';
@@ -13,6 +13,31 @@ const RegisterLakaraja = () => {
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [quotaAvailable, setQuotaAvailable] = useState(true);
+  const [quotaInfo, setQuotaInfo] = useState(null);
+  const [checkingQuota, setCheckingQuota] = useState(true);
+
+  // Check quota availability on component mount
+  useEffect(() => {
+    checkQuotaAvailability();
+  }, []);
+
+  const checkQuotaAvailability = async () => {
+    try {
+      setCheckingQuota(true);
+      const response = await api.get('/lakaraja/kuota/check');
+      if (response.data.success) {
+        setQuotaAvailable(response.data.data.hasAvailableSpots);
+        setQuotaInfo(response.data.data.kuota);
+      }
+    } catch (error) {
+      console.error('Error checking quota:', error);
+      // If error, allow registration (fail-safe)
+      setQuotaAvailable(true);
+    } finally {
+      setCheckingQuota(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -116,13 +141,59 @@ const RegisterLakaraja = () => {
             <div className="mt-4 h-1 w-20 bg-gradient-to-r from-transparent via-orange-500 to-transparent mx-auto"></div>
           </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {errors.general && (
-              <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg text-sm">
-                {errors.general}
+          {/* Loading Check Quota */}
+          {checkingQuota && (
+            <div className="text-center py-8">
+              <div className="inline-block w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+              <p className="text-white/60 text-sm">Memeriksa ketersediaan kuota...</p>
+            </div>
+          )}
+
+          {/* Quota Full Message */}
+          {!checkingQuota && !quotaAvailable && (
+            <div className="space-y-4">
+              <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6 text-center">
+                <i className="fas fa-exclamation-circle text-4xl text-red-400 mb-3"></i>
+                <h3 className="text-lg font-bold text-red-400 mb-2">Pendaftaran Ditutup</h3>
+                <p className="text-white/70 text-sm mb-4">
+                  Maaf, kuota untuk semua kategori sudah penuh.
+                </p>
+                {quotaInfo && (
+                  <div className="space-y-2 mb-4">
+                    {Object.entries(quotaInfo).map(([kategori, info]) => (
+                      <div key={kategori} className="flex items-center justify-between bg-white/5 rounded-lg px-3 py-2">
+                        <span className="text-white/80 font-semibold">{kategori}</span>
+                        <span className="text-red-400 text-sm font-bold">
+                          {info.current}/{info.max} (PENUH)
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
+              <Link
+                to="/lakaraja/login"
+                className="block w-full py-3 bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 font-semibold rounded-xl transition-all text-center"
+              >
+                Sudah Punya Akun? Login
+              </Link>
+              <Link
+                to="/"
+                className="block w-full py-3 bg-white/5 hover:bg-white/10 text-white/70 font-semibold rounded-xl transition-all text-center"
+              >
+                Kembali ke Beranda
+              </Link>
+            </div>
+          )}
+
+          {/* Form - Only show if quota available */}
+          {!checkingQuota && quotaAvailable && (
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {errors.general && (
+                <div className="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg text-sm">
+                  {errors.general}
+                </div>
+              )}
 
             {/* Username */}
             <div>
@@ -234,17 +305,18 @@ const RegisterLakaraja = () => {
                 </span>
               )}
             </button>
-          </form>
 
-          {/* Footer */}
-          <div className="mt-6 text-center">
-            <p className="text-white/60 text-sm">
-              Sudah punya akun?{' '}
-              <Link to="/lakaraja/login" className="text-orange-500 hover:text-orange-400 font-semibold transition-colors">
-                Login di sini
-              </Link>
-            </p>
-          </div>
+            {/* Link to Login */}
+            <div className="text-center">
+              <p className="text-white/60 text-sm">
+                Sudah punya akun?{' '}
+                <Link to="/lakaraja/login" className="text-orange-500 hover:text-orange-400 font-semibold transition-colors">
+                  Login di sini
+                </Link>
+              </p>
+            </div>
+          </form>
+          )}
         </div>
       </div>
 

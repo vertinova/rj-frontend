@@ -1,6 +1,672 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useRef, useState, useEffect } from 'react';
+import axios from 'axios';
+import { getUploadsUrl } from '../services/api';
+
+// Gallery Slideshow Component
+const GallerySlideshow = ({ items, onImageClick }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const intervalRef = useRef(null);
+
+  // Responsive items per view
+  const getItemsPerView = () => {
+    if (window.innerWidth < 640) return 1;
+    if (window.innerWidth < 1024) return 2;
+    return 3;
+  };
+
+  const [itemsPerView, setItemsPerView] = useState(getItemsPerView());
+
+  useEffect(() => {
+    const handleResize = () => {
+      setItemsPerView(getItemsPerView());
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Auto-play functionality
+  useEffect(() => {
+    if (isAutoPlaying && items.length > itemsPerView) {
+      intervalRef.current = setInterval(() => {
+        setCurrentIndex((prev) => 
+          prev + itemsPerView >= items.length ? 0 : prev + 1
+        );
+      }, 4000); // 4 seconds per slide
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [isAutoPlaying, items.length, itemsPerView]);
+
+  const nextSlide = () => {
+    setCurrentIndex((prev) => 
+      prev + itemsPerView >= items.length ? 0 : prev + 1
+    );
+    setIsAutoPlaying(false);
+    setTimeout(() => setIsAutoPlaying(true), 5000);
+  };
+
+  const prevSlide = () => {
+    setCurrentIndex((prev) => 
+      prev === 0 ? Math.max(0, items.length - itemsPerView) : prev - 1
+    );
+    setIsAutoPlaying(false);
+    setTimeout(() => setIsAutoPlaying(true), 5000);
+  };
+
+  const goToSlide = (index) => {
+    setCurrentIndex(index);
+    setIsAutoPlaying(false);
+    setTimeout(() => setIsAutoPlaying(true), 5000);
+  };
+
+  if (!items || items.length === 0) {
+    return (
+      <div style={{
+        textAlign: 'center',
+        padding: '3rem',
+        color: 'rgba(255, 255, 255, 0.5)'
+      }}>
+        <i className="fas fa-images" style={{ fontSize: '3rem', marginBottom: '1rem' }}></i>
+        <p style={{ fontSize: '1.1rem' }}>Belum ada gambar di galeri</p>
+      </div>
+    );
+  }
+
+  const totalSlides = Math.ceil(items.length / itemsPerView);
+  const currentSlide = Math.floor(currentIndex / itemsPerView);
+
+  return (
+    <div style={{
+      position: 'relative',
+      width: '100%',
+      maxWidth: '1400px',
+      margin: '0 auto',
+      padding: '0 60px'
+    }}>
+      {/* Slideshow Container */}
+      <div style={{
+        overflow: 'hidden',
+        borderRadius: '20px'
+      }}>
+        <div style={{
+          display: 'flex',
+          transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+          transform: `translateX(-${(currentIndex / itemsPerView) * 100}%)`
+        }}>
+          {items.map((item, index) => (
+            <div
+              key={index}
+              style={{
+                minWidth: `${100 / itemsPerView}%`,
+                padding: '0 12px',
+                boxSizing: 'border-box'
+              }}
+            >
+              <div
+                onClick={() => onImageClick && onImageClick(item)}
+                style={{
+                  position: 'relative',
+                  overflow: 'hidden',
+                  borderRadius: '20px',
+                  boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)',
+                  cursor: 'pointer',
+                  transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                  background: `linear-gradient(135deg, ${item.color}15, ${item.color}05)`,
+                  border: '2px solid rgba(255, 255, 255, 0.1)',
+                  height: '400px',
+                  transform: 'translateZ(0)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-10px) scale(1.02)';
+                  e.currentTarget.style.boxShadow = `0 20px 60px ${item.color}50`;
+                  e.currentTarget.style.borderColor = item.color;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                  e.currentTarget.style.boxShadow = '0 10px 40px rgba(0, 0, 0, 0.3)';
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                }}
+              >
+                {/* Category Badge */}
+                <div style={{
+                  position: 'absolute',
+                  top: '15px',
+                  left: '15px',
+                  background: item.color,
+                  color: 'white',
+                  padding: '6px 15px',
+                  borderRadius: '20px',
+                  fontSize: '0.8rem',
+                  fontWeight: '600',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  zIndex: 2,
+                  boxShadow: `0 4px 15px ${item.color}80`,
+                  animation: 'float 3s ease-in-out infinite'
+                }}>
+                  {item.category}
+                </div>
+
+                {/* Image */}
+                <div style={{
+                  width: '100%',
+                  height: '100%',
+                  overflow: 'hidden'
+                }}>
+                  <img 
+                    src={item.src} 
+                    alt={item.title}
+                    style={{ 
+                      width: '100%', 
+                      height: '100%', 
+                      objectFit: 'cover', 
+                      display: 'block',
+                      transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), filter 0.3s ease',
+                      filter: 'brightness(0.85) contrast(1.1)',
+                      transform: 'scale(1.05)'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.transform = 'scale(1.15)';
+                      e.target.style.filter = 'brightness(1) contrast(1.2)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.transform = 'scale(1.05)';
+                      e.target.style.filter = 'brightness(0.85) contrast(1.1)';
+                    }}
+                  />
+                </div>
+
+                {/* Gradient Overlay */}
+                <div style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  background: 'linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.9) 100%)',
+                  pointerEvents: 'none'
+                }} />
+
+                {/* Content Overlay */}
+                <div style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  padding: '25px',
+                  zIndex: 1
+                }}>
+                  <h4 style={{
+                    color: 'white',
+                    fontSize: '1.4rem',
+                    fontWeight: '700',
+                    margin: '0 0 8px 0',
+                    textShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
+                    letterSpacing: '-0.5px'
+                  }}>
+                    {item.title}
+                  </h4>
+                  <p style={{
+                    color: 'rgba(255, 255, 255, 0.9)',
+                    fontSize: '0.95rem',
+                    margin: 0,
+                    lineHeight: '1.5',
+                    textShadow: '0 1px 5px rgba(0, 0, 0, 0.5)'
+                  }}>
+                    {item.description}
+                  </p>
+                </div>
+
+                {/* Zoom Icon */}
+                <div style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  width: '60px',
+                  height: '60px',
+                  background: 'rgba(255, 255, 255, 0.9)',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  opacity: 0,
+                  transition: 'opacity 0.3s ease',
+                  zIndex: 2
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.opacity = 1;
+                }}
+                >
+                  <i className="fas fa-search-plus" style={{
+                    fontSize: '1.5rem',
+                    color: item.color
+                  }}></i>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Navigation Buttons */}
+      {items.length > itemsPerView && (
+        <>
+          <button
+            onClick={prevSlide}
+            style={{
+              position: 'absolute',
+              left: '0',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              width: '50px',
+              height: '50px',
+              borderRadius: '50%',
+              border: '2px solid rgba(255, 255, 255, 0.3)',
+              background: 'rgba(0, 0, 0, 0.5)',
+              backdropFilter: 'blur(10px)',
+              color: 'white',
+              fontSize: '1.5rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.3s ease',
+              zIndex: 10
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = 'rgba(52, 152, 219, 0.8)';
+              e.target.style.borderColor = '#3498db';
+              e.target.style.transform = 'translateY(-50%) scale(1.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'rgba(0, 0, 0, 0.5)';
+              e.target.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+              e.target.style.transform = 'translateY(-50%) scale(1)';
+            }}
+          >
+            <i className="fas fa-chevron-left"></i>
+          </button>
+          
+          <button
+            onClick={nextSlide}
+            style={{
+              position: 'absolute',
+              right: '0',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              width: '50px',
+              height: '50px',
+              borderRadius: '50%',
+              border: '2px solid rgba(255, 255, 255, 0.3)',
+              background: 'rgba(0, 0, 0, 0.5)',
+              backdropFilter: 'blur(10px)',
+              color: 'white',
+              fontSize: '1.5rem',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'all 0.3s ease',
+              zIndex: 10
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = 'rgba(52, 152, 219, 0.8)';
+              e.target.style.borderColor = '#3498db';
+              e.target.style.transform = 'translateY(-50%) scale(1.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'rgba(0, 0, 0, 0.5)';
+              e.target.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+              e.target.style.transform = 'translateY(-50%) scale(1)';
+            }}
+          >
+            <i className="fas fa-chevron-right"></i>
+          </button>
+        </>
+      )}
+
+      {/* Dots Indicator */}
+      {items.length > itemsPerView && (
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '10px',
+          marginTop: '2rem'
+        }}>
+          {Array.from({ length: totalSlides }).map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index * itemsPerView)}
+              style={{
+                width: currentSlide === index ? '40px' : '12px',
+                height: '12px',
+                borderRadius: '6px',
+                border: 'none',
+                background: currentSlide === index 
+                  ? 'linear-gradient(135deg, #3498db, #2ecc71)'
+                  : 'rgba(255, 255, 255, 0.3)',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                boxShadow: currentSlide === index ? '0 0 15px rgba(52, 152, 219, 0.5)' : 'none'
+              }}
+              onMouseEnter={(e) => {
+                if (currentSlide !== index) {
+                  e.target.style.background = 'rgba(255, 255, 255, 0.5)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (currentSlide !== index) {
+                  e.target.style.background = 'rgba(255, 255, 255, 0.3)';
+                }
+              }}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Participants Slideshow Component
+const ParticipantsSlideshow = ({ participants }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [itemsPerView, setItemsPerView] = useState(4);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+
+  // Responsive items per view
+  useEffect(() => {
+    const updateItemsPerView = () => {
+      if (window.innerWidth < 640) {
+        setItemsPerView(1); // Mobile: 1 card
+      } else if (window.innerWidth < 1024) {
+        setItemsPerView(2); // Tablet: 2 cards
+      } else if (window.innerWidth < 1280) {
+        setItemsPerView(3); // Small desktop: 3 cards
+      } else {
+        setItemsPerView(4); // Large desktop: 4 cards
+      }
+    };
+
+    updateItemsPerView();
+    window.addEventListener('resize', updateItemsPerView);
+    return () => window.removeEventListener('resize', updateItemsPerView);
+  }, []);
+
+  // Auto-play slideshow
+  useEffect(() => {
+    if (!isAutoPlaying || participants.length <= itemsPerView) return;
+
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => {
+        const maxIndex = Math.max(0, participants.length - itemsPerView);
+        return prev >= maxIndex ? 0 : prev + 1;
+      });
+    }, 3000); // Change every 3 seconds
+
+    return () => clearInterval(interval);
+  }, [isAutoPlaying, participants.length, itemsPerView]);
+
+  const handlePrev = () => {
+    setIsAutoPlaying(false);
+    setCurrentIndex((prev) => {
+      const maxIndex = Math.max(0, participants.length - itemsPerView);
+      return prev <= 0 ? maxIndex : prev - 1;
+    });
+  };
+
+  const handleNext = () => {
+    setIsAutoPlaying(false);
+    setCurrentIndex((prev) => {
+      const maxIndex = Math.max(0, participants.length - itemsPerView);
+      return prev >= maxIndex ? 0 : prev + 1;
+    });
+  };
+
+  const visibleParticipants = participants.slice(currentIndex, currentIndex + itemsPerView);
+  
+  // Pad with empty slots if needed
+  while (visibleParticipants.length < itemsPerView && participants.length < itemsPerView) {
+    visibleParticipants.push(null);
+  }
+
+  return (
+    <div style={{ position: 'relative' }}>
+      {/* Slideshow Container */}
+      <div style={{
+        display: 'flex',
+        gap: '1.5rem',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '280px',
+        padding: '1rem 0'
+      }}>
+        {visibleParticipants.map((participant, index) => {
+          if (!participant) return <div key={`empty-${index}`} style={{ flex: 1, minWidth: '200px' }} />;
+          
+          const logoUrl = getUploadsUrl(`lakaraja/${participant.logo_satuan}`);
+          
+          return (
+            <div 
+              key={participant.id} 
+              style={{
+                flex: 1,
+                minWidth: itemsPerView === 1 ? '100%' : '200px',
+                maxWidth: itemsPerView === 1 ? '350px' : '280px',
+                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
+                padding: '1.5rem',
+                borderRadius: '15px',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                textAlign: 'center',
+                transition: 'all 0.3s ease',
+                cursor: 'pointer',
+                animation: 'fadeIn 0.5s ease-in-out'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-10px) scale(1.05)';
+                e.currentTarget.style.boxShadow = '0 15px 40px rgba(243, 156, 18, 0.3)';
+                e.currentTarget.style.borderColor = '#f39c12';
+                setIsAutoPlaying(false);
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                e.currentTarget.style.boxShadow = 'none';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+              }}
+            >
+              <div style={{
+                width: itemsPerView === 1 ? '150px' : '120px',
+                height: itemsPerView === 1 ? '150px' : '120px',
+                margin: '0 auto 1rem',
+                borderRadius: '50%',
+                overflow: 'hidden',
+                border: `3px solid ${
+                  participant.kategori === 'SD' ? '#f39c12' : 
+                  participant.kategori === 'SMP' ? '#3498db' : 
+                  '#9b59b6'
+                }`,
+                boxShadow: `0 5px 20px ${
+                  participant.kategori === 'SD' ? 'rgba(243, 156, 18, 0.3)' : 
+                  participant.kategori === 'SMP' ? 'rgba(52, 152, 219, 0.3)' : 
+                  'rgba(155, 89, 182, 0.3)'
+                }`,
+                background: 'linear-gradient(135deg, rgba(243, 156, 18, 0.2), rgba(230, 126, 34, 0.2))',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <img 
+                  src={logoUrl}
+                  alt={participant.nama_satuan}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover'
+                  }}
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.parentElement.innerHTML = '<i class="fas fa-shield-alt" style="font-size: 3rem; color: #f39c12;"></i>';
+                  }}
+                />
+              </div>
+              <h4 style={{
+                color: 'white',
+                fontSize: itemsPerView === 1 ? '1.2rem' : '1rem',
+                marginBottom: '0.5rem',
+                fontWeight: '600',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
+              }}>{participant.nama_satuan}</h4>
+              <p style={{
+                color: 'rgba(255, 255, 255, 0.6)',
+                fontSize: itemsPerView === 1 ? '0.95rem' : '0.85rem',
+                marginBottom: '0.8rem',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
+              }}>{participant.nama_sekolah}</p>
+              <span style={{
+                display: 'inline-block',
+                padding: '0.4rem 0.8rem',
+                background: `linear-gradient(135deg, ${
+                  participant.kategori === 'SD' ? '#f39c12' : 
+                  participant.kategori === 'SMP' ? '#3498db' : 
+                  '#9b59b6'
+                }, ${
+                  participant.kategori === 'SD' ? '#e67e22' : 
+                  participant.kategori === 'SMP' ? '#2980b9' : 
+                  '#8e44ad'
+                })`,
+                color: 'white',
+                fontSize: '0.75rem',
+                fontWeight: '700',
+                borderRadius: '20px',
+                textTransform: 'uppercase',
+                letterSpacing: '1px'
+              }}>
+                {participant.kategori}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Navigation Buttons - Only show if more participants than visible */}
+      {participants.length > itemsPerView && (
+        <>
+          <button
+            onClick={handlePrev}
+            style={{
+              position: 'absolute',
+              left: '-15px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              width: '45px',
+              height: '45px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #f39c12, #e67e22)',
+              border: 'none',
+              color: 'white',
+              fontSize: '1.2rem',
+              cursor: 'pointer',
+              boxShadow: '0 4px 15px rgba(243, 156, 18, 0.4)',
+              transition: 'all 0.3s ease',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 10
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = 'translateY(-50%) scale(1.1)';
+              e.target.style.boxShadow = '0 6px 20px rgba(243, 156, 18, 0.6)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = 'translateY(-50%) scale(1)';
+              e.target.style.boxShadow = '0 4px 15px rgba(243, 156, 18, 0.4)';
+            }}
+          >
+            <i className="fas fa-chevron-left"></i>
+          </button>
+
+          <button
+            onClick={handleNext}
+            style={{
+              position: 'absolute',
+              right: '-15px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              width: '45px',
+              height: '45px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #f39c12, #e67e22)',
+              border: 'none',
+              color: 'white',
+              fontSize: '1.2rem',
+              cursor: 'pointer',
+              boxShadow: '0 4px 15px rgba(243, 156, 18, 0.4)',
+              transition: 'all 0.3s ease',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 10
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.transform = 'translateY(-50%) scale(1.1)';
+              e.target.style.boxShadow = '0 6px 20px rgba(243, 156, 18, 0.6)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = 'translateY(-50%) scale(1)';
+              e.target.style.boxShadow = '0 4px 15px rgba(243, 156, 18, 0.4)';
+            }}
+          >
+            <i className="fas fa-chevron-right"></i>
+          </button>
+        </>
+      )}
+
+      {/* Dots Indicator */}
+      {participants.length > itemsPerView && (
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '8px',
+          marginTop: '1.5rem'
+        }}>
+          {Array.from({ length: Math.ceil(participants.length / itemsPerView) }).map((_, index) => (
+            <button
+              key={index}
+              onClick={() => {
+                setCurrentIndex(index * itemsPerView);
+                setIsAutoPlaying(false);
+              }}
+              style={{
+                width: currentIndex === index * itemsPerView ? '30px' : '10px',
+                height: '10px',
+                borderRadius: '5px',
+                background: currentIndex === index * itemsPerView 
+                  ? 'linear-gradient(135deg, #f39c12, #e67e22)' 
+                  : 'rgba(255, 255, 255, 0.3)',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                boxShadow: currentIndex === index * itemsPerView ? '0 2px 8px rgba(243, 156, 18, 0.4)' : 'none'
+              }}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const Home = () => {
   const { user } = useAuth();
@@ -12,8 +678,76 @@ const Home = () => {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallButton, setShowInstallButton] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [galleryFilter, setGalleryFilter] = useState('all');
   const [isPWA, setIsPWA] = useState(false);
+  
+  // Lakaraja data
+  const [lakarajaQuota, setLakarajaQuota] = useState({ SD: {}, SMP: {}, SMA: {} });
+  const [lakarajaParticipants, setLakarajaParticipants] = useState([]);
+  const [loadingLakaraja, setLoadingLakaraja] = useState(true);
+  
+  // Countdown state
+  const [countdown, setCountdown] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0
+  });
+
+  // Fetch Lakaraja data
+  useEffect(() => {
+    const fetchLakarajaData = async () => {
+      try {
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        
+        // Fetch quota
+        const quotaRes = await axios.get(`${API_URL}/lakaraja/kuota`);
+        if (quotaRes.data.success) {
+          setLakarajaQuota(quotaRes.data.data);
+        }
+        
+        // Fetch approved participants with logo (PUBLIC ENDPOINT - no auth required)
+        const participantsRes = await axios.get(`${API_URL}/lakaraja/participants`);
+        if (participantsRes.data.success) {
+          // Filter only those with logo_satuan
+          const withLogos = participantsRes.data.data.filter(p => p.logo_satuan);
+          setLakarajaParticipants(withLogos);
+        }
+      } catch (error) {
+        console.error('Error fetching Lakaraja data:', error);
+      } finally {
+        setLoadingLakaraja(false);
+      }
+    };
+
+    fetchLakarajaData();
+  }, []);
+
+  // Countdown Timer - Lakaraja 2026
+  useEffect(() => {
+    const targetDate = new Date('2026-01-31T00:00:00').getTime();
+
+    const updateCountdown = () => {
+      const now = new Date().getTime();
+      const distance = targetDate - now;
+
+      if (distance < 0) {
+        setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      setCountdown({ days, hours, minutes, seconds });
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Interactive Hexagon Animation
   useEffect(() => {
@@ -1041,6 +1775,16 @@ const Home = () => {
           </li>
           <li>
             <a 
+              href="#lakaraja" 
+              onClick={(e) => moveProfile(e, '#lakaraja')} 
+              className={activeSection === 'lakaraja' ? 'active' : ''}
+              title="Lakaraja"
+            >
+              <i className="fas fa-trophy"></i>
+            </a>
+          </li>
+          <li>
+            <a 
               href="#about" 
               onClick={(e) => moveProfile(e, '#about')} 
               className={activeSection === 'about' ? 'active' : ''}
@@ -1057,16 +1801,6 @@ const Home = () => {
               title="Galeri"
             >
               <i className="fas fa-images"></i>
-            </a>
-          </li>
-          <li>
-            <a 
-              href="#lakaraja" 
-              onClick={(e) => moveProfile(e, '#lakaraja')} 
-              className={activeSection === 'lakaraja' ? 'active' : ''}
-              title="Lakaraja"
-            >
-              <i className="fas fa-trophy"></i>
             </a>
           </li>
           {showInstallButton && (
@@ -1228,6 +1962,364 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Lakaraja Section */}
+      <section 
+        id="lakaraja"
+        style={{
+          minHeight: '100vh',
+          padding: '8rem 2rem',
+          position: 'relative',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'linear-gradient(180deg, transparent 0%, rgba(243, 156, 18, 0.05) 100%)',
+          overflow: 'hidden'
+        }}
+      >
+        {/* Background Decorations */}
+        <div style={{
+          position: 'absolute',
+          top: '10%',
+          right: '10%',
+          width: '300px',
+          height: '300px',
+          background: 'radial-gradient(circle, rgba(243, 156, 18, 0.1) 0%, transparent 70%)',
+          borderRadius: '50%',
+          filter: 'blur(60px)',
+          animation: 'float 6s ease-in-out infinite'
+        }} />
+        <div style={{
+          position: 'absolute',
+          bottom: '10%',
+          left: '10%',
+          width: '250px',
+          height: '250px',
+          background: 'radial-gradient(circle, rgba(230, 126, 34, 0.1) 0%, transparent 70%)',
+          borderRadius: '50%',
+          filter: 'blur(60px)',
+          animation: 'float 8s ease-in-out infinite reverse'
+        }} />
+
+        <div style={{
+          maxWidth: '1400px',
+          width: '100%',
+          position: 'relative',
+          zIndex: 1
+        }}>
+          {/* Section Header */}
+          <div style={{
+            marginBottom: '4rem',
+            textAlign: 'center',
+            animation: 'fadeIn 1s ease-out'
+          }}>
+            <h2 style={{
+              fontSize: '3.5rem',
+              fontWeight: '800',
+              marginBottom: '1.5rem',
+              background: 'linear-gradient(135deg, #f39c12 0%, #e74c3c 50%, #c0392b 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              letterSpacing: '-1px',
+              textTransform: 'uppercase'
+            }}>
+              LBB Lakaraja 2026
+            </h2>
+            <p style={{
+              fontSize: '1.3rem',
+              color: '#f39c12',
+              fontWeight: '600',
+              marginBottom: '1rem',
+              letterSpacing: '2px'
+            }}>
+              Rajawali Present
+            </p>
+            <div style={{
+              width: '80px',
+              height: '4px',
+              background: 'linear-gradient(90deg, transparent, #f39c12, transparent)',
+              margin: '0 auto',
+              marginBottom: '1.5rem'
+            }} />
+            
+            {/* Event Date */}
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.8rem',
+              padding: '0.8rem 1.5rem',
+              background: 'linear-gradient(135deg, rgba(243, 156, 18, 0.2) 0%, rgba(230, 126, 34, 0.15) 100%)',
+              backdropFilter: 'blur(10px)',
+              borderRadius: '50px',
+              border: '2px solid rgba(243, 156, 18, 0.4)',
+              marginBottom: '2rem',
+              boxShadow: '0 4px 20px rgba(243, 156, 18, 0.3)'
+            }}>
+              <i className="fas fa-calendar-alt" style={{
+                fontSize: '1.3rem',
+                color: '#f39c12'
+              }}></i>
+              <span style={{
+                fontSize: '1.1rem',
+                fontWeight: '700',
+                color: 'white',
+                letterSpacing: '1px'
+              }}>
+                31 Januari 2026
+              </span>
+            </div>
+          </div>
+
+          {/* Countdown Timer */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '1rem',
+            marginBottom: '3rem',
+            flexWrap: 'wrap'
+          }}>
+            {[
+              { label: 'Days', value: countdown.days },
+              { label: 'Hours', value: countdown.hours },
+              { label: 'Min', value: countdown.minutes },
+              { label: 'Sec', value: countdown.seconds }
+            ].map((item, index) => (
+              <div key={index} style={{
+                background: 'linear-gradient(135deg, rgba(243, 156, 18, 0.15) 0%, rgba(230, 126, 34, 0.1) 100%)',
+                backdropFilter: 'blur(10px)',
+                padding: '1.2rem 1.5rem',
+                borderRadius: '15px',
+                border: '2px solid rgba(243, 156, 18, 0.3)',
+                minWidth: '90px',
+                textAlign: 'center',
+                transition: 'all 0.3s ease',
+                boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-5px) scale(1.05)';
+                e.currentTarget.style.borderColor = '#f39c12';
+                e.currentTarget.style.boxShadow = '0 8px 25px rgba(243, 156, 18, 0.4)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                e.currentTarget.style.borderColor = 'rgba(243, 156, 18, 0.3)';
+                e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
+              }}>
+                <div style={{
+                  fontSize: '2rem',
+                  fontWeight: '800',
+                  color: '#f39c12',
+                  marginBottom: '0.3rem',
+                  fontFamily: 'monospace',
+                  letterSpacing: '1px'
+                }}>
+                  {String(item.value).padStart(2, '0')}
+                </div>
+                <div style={{
+                  fontSize: '0.7rem',
+                  color: 'rgba(255, 255, 255, 0.7)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  fontWeight: '600'
+                }}>
+                  {item.label}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Quota Cards - Horizontal Compact Design */}
+          <div style={{
+            display: 'flex',
+            flexDirection: 'row',
+            gap: '1rem',
+            marginBottom: '3rem',
+            flexWrap: 'wrap',
+            justifyContent: 'center'
+          }}>
+            {['SD', 'SMP', 'SMA'].map((kategori) => {
+              const quota = lakarajaQuota[kategori] || { max: 0, current: 0, available: 0, isFull: false };
+              const percentage = quota.max > 0 ? (quota.current / quota.max) * 100 : 0;
+              const color = kategori === 'SD' ? '#f39c12' : kategori === 'SMP' ? '#3498db' : '#9b59b6';
+              
+              return (
+                <div key={kategori} style={{
+                  flex: '1 1 300px',
+                  maxWidth: '380px',
+                  minWidth: '280px',
+                  padding: '1.2rem 1.5rem',
+                  background: `linear-gradient(135deg, rgba(${kategori === 'SD' ? '243, 156, 18' : kategori === 'SMP' ? '52, 152, 219' : '155, 89, 182'}, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%)`,
+                  borderRadius: '15px',
+                  border: `2px solid ${color}33`,
+                  backdropFilter: 'blur(10px)',
+                  transition: 'all 0.3s ease',
+                  cursor: 'default',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.8rem'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-5px)';
+                  e.currentTarget.style.boxShadow = `0 10px 25px ${color}40`;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}>
+                  {/* Header */}
+                  <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '0.8rem'
+                  }}>
+                    <i className={`fas ${
+                      kategori === 'SD' ? 'fa-child' : 
+                      kategori === 'SMP' ? 'fa-user-graduate' : 
+                      'fa-graduation-cap'
+                    }`} style={{
+                      fontSize: '2rem',
+                      color: color
+                    }}></i>
+                    <div style={{ flex: 1 }}>
+                      <h3 style={{
+                        color: 'white',
+                        fontSize: '1.3rem',
+                        margin: 0,
+                        fontWeight: '700'
+                      }}>Kategori {kategori}</h3>
+                      <span style={{ 
+                        color: color, 
+                        fontWeight: '700', 
+                        fontSize: '0.95rem' 
+                      }}>
+                        {quota.current} / {quota.max} Peserta
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {/* Progress Bar */}
+                  <div style={{
+                    height: '8px',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    borderRadius: '10px',
+                    overflow: 'hidden'
+                  }}>
+                    <div style={{
+                      height: '100%',
+                      background: `linear-gradient(90deg, ${color}, ${color}cc)`,
+                      width: `${percentage}%`,
+                      transition: 'width 1s ease',
+                      borderRadius: '10px',
+                      boxShadow: `0 0 10px ${color}`
+                    }} />
+                  </div>
+                  
+                  {/* Status Badge */}
+                  <div style={{
+                    textAlign: 'center',
+                    padding: '0.5rem',
+                    background: quota.isFull ? 'rgba(231, 76, 60, 0.2)' : 'rgba(46, 204, 113, 0.2)',
+                    borderRadius: '8px',
+                    border: `1px solid ${quota.isFull ? '#e74c3c' : '#2ecc71'}33`
+                  }}>
+                    <span style={{
+                      color: quota.isFull ? '#e74c3c' : '#2ecc71',
+                      fontWeight: '700',
+                      fontSize: '0.85rem'
+                    }}>
+                      {quota.isFull ? '❌ Kuota Penuh' : `✅ ${quota.available} Slot Tersedia`}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Registered Participants Section - Slideshow */}
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(243, 156, 18, 0.1) 0%, rgba(230, 126, 34, 0.05) 100%)',
+            padding: '2.5rem 2rem',
+            borderRadius: '20px',
+            border: '1px solid rgba(243, 156, 18, 0.2)',
+            backdropFilter: 'blur(10px)',
+            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+            marginBottom: '3rem',
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
+            <h3 style={{
+              color: 'white',
+              fontSize: '1.8rem',
+              marginBottom: '2rem',
+              textAlign: 'center',
+              fontWeight: '700'
+            }}>
+              <i className="fas fa-users" style={{ marginRight: '10px', color: '#f39c12' }}></i>
+              Peserta Terdaftar
+            </h3>
+            
+            {loadingLakaraja ? (
+              <div style={{ textAlign: 'center', padding: '3rem' }}>
+                <i className="fas fa-spinner fa-spin" style={{ fontSize: '3rem', color: '#f39c12' }}></i>
+                <p style={{ color: 'rgba(255, 255, 255, 0.7)', marginTop: '1rem' }}>Loading participants...</p>
+              </div>
+            ) : lakarajaParticipants.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '3rem' }}>
+                <i className="fas fa-info-circle" style={{ fontSize: '3rem', color: '#f39c12', marginBottom: '1rem' }}></i>
+                <p style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '1.1rem' }}>
+                  Belum ada peserta yang terdaftar
+                </p>
+              </div>
+            ) : (
+              <ParticipantsSlideshow participants={lakarajaParticipants} />
+            )}
+          </div>
+
+          {/* CTA Button */}
+          <div style={{ textAlign: 'center' }}>
+            <Link 
+              to="/lakaraja/register"
+              className="glow-btn"
+              style={{
+                display: 'inline-block',
+                padding: '18px 50px',
+                fontSize: '1.2rem',
+                fontWeight: '700',
+                color: 'white',
+                background: 'linear-gradient(135deg, #f39c12 0%, #e74c3c 100%)',
+                border: 'none',
+                borderRadius: '50px',
+                textDecoration: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                boxShadow: '0 10px 30px rgba(243, 156, 18, 0.4)',
+                letterSpacing: '1px',
+                textTransform: 'uppercase'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.transform = 'translateY(-5px) scale(1.05)';
+                e.target.style.boxShadow = '0 15px 40px rgba(243, 156, 18, 0.6)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.transform = 'translateY(0) scale(1)';
+                e.target.style.boxShadow = '0 10px 30px rgba(243, 156, 18, 0.4)';
+              }}
+            >
+              <i className="fas fa-user-plus" style={{ marginRight: '10px' }}></i>
+              Daftar Lakaraja 2026
+            </Link>
+            
+            <p style={{
+              color: 'rgba(255, 255, 255, 0.6)',
+              fontSize: '0.9rem',
+              marginTop: '1.5rem'
+            }}>
+              <i className="fas fa-info-circle" style={{ marginRight: '8px', color: '#f39c12' }}></i>
+              Pendaftaran dibuka untuk umum. Sistem first-come-first-served.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* About Section */}
       <section 
         id="about" 
@@ -1333,64 +2425,10 @@ const Home = () => {
             Dokumentasi kegiatan dan momen berharga Paskibra Rajawali
           </p>
         </div>
-
-        {/* Filter Buttons */}
-        <div style={{
-          display: 'flex',
-          gap: '15px',
-          marginBottom: '3rem',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-          animation: 'fadeIn 1.4s ease-out'
-        }}>
-          {['all', 'latihan', 'upacara', 'kompetisi'].map((filter) => (
-            <button
-              key={filter}
-              onClick={() => setGalleryFilter(filter)}
-              style={{
-                padding: '12px 30px',
-                border: '2px solid',
-                borderColor: galleryFilter === filter ? '#3498db' : 'rgba(255, 255, 255, 0.2)',
-                borderRadius: '50px',
-                background: galleryFilter === filter 
-                  ? 'linear-gradient(135deg, #3498db 0%, #2ecc71 100%)' 
-                  : 'rgba(255, 255, 255, 0.05)',
-                color: 'white',
-                fontSize: '1rem',
-                fontWeight: '600',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                textTransform: 'capitalize',
-                backdropFilter: 'blur(10px)',
-                boxShadow: galleryFilter === filter ? '0 5px 20px rgba(52, 152, 219, 0.4)' : 'none'
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.transform = 'translateY(-3px)';
-                e.target.style.borderColor = '#3498db';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.transform = 'translateY(0)';
-                if (galleryFilter !== filter) {
-                  e.target.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-                }
-              }}
-            >
-              {filter === 'all' ? 'Semua' : filter}
-            </button>
-          ))}
-        </div>
         
-        {/* Gallery Grid - Masonry Style */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-          gap: '25px',
-          maxWidth: '1400px',
-          margin: '0 auto',
-          width: '100%',
-          padding: '0 20px'
-        }}>
-          {[
+        {/* Gallery Slideshow */}
+        <GallerySlideshow 
+          items={[
             { 
               src: '/assets/images/rj3.jpg', 
               title: 'Pelantikan Gabungan Ekskul', 
@@ -1426,161 +2464,9 @@ const Home = () => {
               description: 'Pelatihan khusus anggota baru',
               color: '#3498db'
             },
-        
-          ]
-            .filter(item => galleryFilter === 'all' || item.category === galleryFilter)
-            .map((item, index) => (
-            <div
-              key={index}
-              onClick={() => setSelectedImage(item)}
-              style={{
-                position: 'relative',
-                overflow: 'hidden',
-                borderRadius: '20px',
-                boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)',
-                animation: `fadeInScale ${1 + index * 0.15}s ease-out`,
-                animationDelay: `${index * 0.1}s`,
-                opacity: 0,
-                animationFillMode: 'forwards',
-                cursor: 'pointer',
-                transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-                background: `linear-gradient(135deg, ${item.color}15, ${item.color}05)`,
-                border: '2px solid rgba(255, 255, 255, 0.1)',
-                height: index % 3 === 0 ? '400px' : '350px', // Varied heights for masonry effect
-                transform: 'translateZ(0)' // GPU acceleration
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-10px) scale(1.02)';
-                e.currentTarget.style.boxShadow = `0 20px 60px ${item.color}50`;
-                e.currentTarget.style.borderColor = item.color;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                e.currentTarget.style.boxShadow = '0 10px 40px rgba(0, 0, 0, 0.3)';
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-              }}
-            >
-              {/* Category Badge */}
-              <div style={{
-                position: 'absolute',
-                top: '15px',
-                left: '15px',
-                background: item.color,
-                color: 'white',
-                padding: '6px 15px',
-                borderRadius: '20px',
-                fontSize: '0.8rem',
-                fontWeight: '600',
-                textTransform: 'uppercase',
-                letterSpacing: '1px',
-                zIndex: 2,
-                boxShadow: `0 4px 15px ${item.color}80`,
-                animation: 'float 3s ease-in-out infinite'
-              }}>
-                {item.category}
-              </div>
-
-              {/* Image with Parallax Effect */}
-              <div style={{
-                width: '100%',
-                height: '100%',
-                overflow: 'hidden'
-              }}>
-                <img 
-                  src={item.src} 
-                  alt={item.title}
-                  style={{ 
-                    width: '100%', 
-                    height: '100%', 
-                    objectFit: 'cover', 
-                    display: 'block',
-                    transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), filter 0.3s ease',
-                    filter: 'brightness(0.85) contrast(1.1)',
-                    transform: 'scale(1.05)'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.transform = 'scale(1.15)';
-                    e.target.style.filter = 'brightness(1) contrast(1.2)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.transform = 'scale(1.05)';
-                    e.target.style.filter = 'brightness(0.85) contrast(1.1)';
-                  }}
-                />
-              </div>
-
-              {/* Gradient Overlay */}
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                background: 'linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.9) 100%)',
-                transition: 'opacity 0.3s ease',
-                pointerEvents: 'none'
-              }} />
-
-              {/* Content Overlay */}
-              <div style={{
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                right: 0,
-                padding: '25px',
-                transform: 'translateY(0)',
-                transition: 'transform 0.4s ease',
-                zIndex: 1
-              }}>
-                <h4 style={{
-                  color: 'white',
-                  fontSize: '1.4rem',
-                  fontWeight: '700',
-                  margin: '0 0 8px 0',
-                  textShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
-                  letterSpacing: '-0.5px'
-                }}>
-                  {item.title}
-                </h4>
-                <p style={{
-                  color: 'rgba(255, 255, 255, 0.9)',
-                  fontSize: '0.95rem',
-                  margin: 0,
-                  lineHeight: '1.5',
-                  textShadow: '0 1px 5px rgba(0, 0, 0, 0.5)'
-                }}>
-                  {item.description}
-                </p>
-              </div>
-
-              {/* Zoom Icon */}
-              <div style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%) scale(0)',
-                width: '60px',
-                height: '60px',
-                background: 'rgba(255, 255, 255, 0.95)',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                transition: 'transform 0.3s ease',
-                zIndex: 3,
-                boxShadow: '0 5px 20px rgba(0, 0, 0, 0.3)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1)';
-              }}>
-                <i className="fas fa-search-plus" style={{ 
-                  fontSize: '1.5rem', 
-                  color: item.color 
-                }}></i>
-              </div>
-            </div>
-          ))}
-        </div>
+          ]}
+          onImageClick={(item) => setSelectedImage(item)}
+        />
 
         {/* Lightbox Modal */}
         {selectedImage && (
@@ -1701,288 +2587,6 @@ const Home = () => {
             </div>
           </div>
         )}
-      </section>
-
-      {/* Lakaraja Section */}
-      <section 
-        id="lakaraja"
-        style={{
-          minHeight: '100vh',
-          padding: '8rem 2rem',
-          position: 'relative',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: 'linear-gradient(180deg, transparent 0%, rgba(243, 156, 18, 0.05) 100%)',
-          overflow: 'hidden'
-        }}
-      >
-        {/* Background Decorations */}
-        <div style={{
-          position: 'absolute',
-          top: '10%',
-          right: '10%',
-          width: '300px',
-          height: '300px',
-          background: 'radial-gradient(circle, rgba(243, 156, 18, 0.1) 0%, transparent 70%)',
-          borderRadius: '50%',
-          filter: 'blur(60px)',
-          animation: 'float 6s ease-in-out infinite'
-        }} />
-        <div style={{
-          position: 'absolute',
-          bottom: '10%',
-          left: '10%',
-          width: '250px',
-          height: '250px',
-          background: 'radial-gradient(circle, rgba(230, 126, 34, 0.1) 0%, transparent 70%)',
-          borderRadius: '50%',
-          filter: 'blur(60px)',
-          animation: 'float 8s ease-in-out infinite reverse'
-        }} />
-
-        <div style={{
-          maxWidth: '1200px',
-          width: '100%',
-          textAlign: 'center',
-          position: 'relative',
-          zIndex: 1
-        }}>
-          {/* Section Header */}
-          <div style={{
-            marginBottom: '4rem',
-            animation: 'fadeIn 1s ease-out'
-          }}>
-            <h2 style={{
-              fontSize: '3.5rem',
-              fontWeight: '800',
-              marginBottom: '1.5rem',
-              background: 'linear-gradient(135deg, #f39c12 0%, #e74c3c 50%, #c0392b 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              letterSpacing: '-1px',
-              textTransform: 'uppercase'
-            }}>
-              Lakaraja 2026
-            </h2>
-            <p style={{
-              fontSize: '1.3rem',
-              color: '#f39c12',
-              fontWeight: '600',
-              marginBottom: '1rem',
-              letterSpacing: '2px'
-            }}>
-              Lomba Baris Berbaris
-            </p>
-            <div style={{
-              width: '80px',
-              height: '4px',
-              background: 'linear-gradient(90deg, transparent, #f39c12, transparent)',
-              margin: '0 auto'
-            }} />
-          </div>
-
-          {/* Main Content */}
-          <div style={{
-            background: 'linear-gradient(135deg, rgba(243, 156, 18, 0.1) 0%, rgba(230, 126, 34, 0.05) 100%)',
-            padding: '3rem 2rem',
-            borderRadius: '20px',
-            border: '1px solid rgba(243, 156, 18, 0.2)',
-            backdropFilter: 'blur(10px)',
-            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
-            marginBottom: '3rem',
-            animation: 'fadeInScale 1.2s ease-out'
-          }}>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-              gap: '2rem',
-              marginBottom: '2.5rem'
-            }}>
-              {/* Info Item 1 */}
-              <div style={{
-                padding: '1.5rem',
-                background: 'rgba(0, 0, 0, 0.2)',
-                borderRadius: '15px',
-                border: '1px solid rgba(243, 156, 18, 0.3)',
-                transition: 'all 0.3s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-5px)';
-                e.currentTarget.style.borderColor = '#f39c12';
-                e.currentTarget.style.boxShadow = '0 10px 30px rgba(243, 156, 18, 0.3)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.borderColor = 'rgba(243, 156, 18, 0.3)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}>
-                <i className="fas fa-trophy" style={{
-                  fontSize: '2.5rem',
-                  color: '#f39c12',
-                  marginBottom: '1rem',
-                  display: 'block'
-                }}></i>
-                <h3 style={{
-                  color: 'white',
-                  fontSize: '1.2rem',
-                  marginBottom: '0.5rem',
-                  fontWeight: '600'
-                }}>Kompetisi Bergengsi</h3>
-                <p style={{
-                  color: 'rgba(255, 255, 255, 0.7)',
-                  fontSize: '0.95rem',
-                  lineHeight: '1.6'
-                }}>
-                  Ajang kompetisi baris berbaris tingkat regional
-                </p>
-              </div>
-
-              {/* Info Item 2 */}
-              <div style={{
-                padding: '1.5rem',
-                background: 'rgba(0, 0, 0, 0.2)',
-                borderRadius: '15px',
-                border: '1px solid rgba(243, 156, 18, 0.3)',
-                transition: 'all 0.3s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-5px)';
-                e.currentTarget.style.borderColor = '#f39c12';
-                e.currentTarget.style.boxShadow = '0 10px 30px rgba(243, 156, 18, 0.3)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.borderColor = 'rgba(243, 156, 18, 0.3)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}>
-                <i className="fas fa-calendar-alt" style={{
-                  fontSize: '2.5rem',
-                  color: '#f39c12',
-                  marginBottom: '1rem',
-                  display: 'block'
-                }}></i>
-                <h3 style={{
-                  color: 'white',
-                  fontSize: '1.2rem',
-                  marginBottom: '0.5rem',
-                  fontWeight: '600'
-                }}>Tahun 2026</h3>
-                <p style={{
-                  color: 'rgba(255, 255, 255, 0.7)',
-                  fontSize: '0.95rem',
-                  lineHeight: '1.6'
-                }}>
-                  Event tahunan yang dinanti-nanti
-                </p>
-              </div>
-
-              {/* Info Item 3 */}
-              <div style={{
-                padding: '1.5rem',
-                background: 'rgba(0, 0, 0, 0.2)',
-                borderRadius: '15px',
-                border: '1px solid rgba(243, 156, 18, 0.3)',
-                transition: 'all 0.3s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-5px)';
-                e.currentTarget.style.borderColor = '#f39c12';
-                e.currentTarget.style.boxShadow = '0 10px 30px rgba(243, 156, 18, 0.3)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.borderColor = 'rgba(243, 156, 18, 0.3)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}>
-                <i className="fas fa-users" style={{
-                  fontSize: '2.5rem',
-                  color: '#f39c12',
-                  marginBottom: '1rem',
-                  display: 'block'
-                }}></i>
-                <h3 style={{
-                  color: 'white',
-                  fontSize: '1.2rem',
-                  marginBottom: '0.5rem',
-                  fontWeight: '600'
-                }}>Tim & Individu</h3>
-                <p style={{
-                  color: 'rgba(255, 255, 255, 0.7)',
-                  fontSize: '0.95rem',
-                  lineHeight: '1.6'
-                }}>
-                  Kategori tim dan individu tersedia
-                </p>
-              </div>
-            </div>
-
-            {/* Description */}
-            <p style={{
-              fontSize: '1.1rem',
-              color: 'rgba(255, 255, 255, 0.8)',
-              lineHeight: '1.8',
-              marginBottom: '2.5rem',
-              maxWidth: '800px',
-              margin: '0 auto 2.5rem'
-            }}>
-              <strong style={{ color: '#f39c12' }}>Lakaraja</strong> (Lomba Baris Berbaris Rajawali) adalah kompetisi baris berbaris 
-              bergengsi yang diselenggarakan oleh Paskibra MAN 1 Kabupaten Bogor. Ajang ini menjadi wadah bagi para peserta 
-              untuk menunjukkan kemampuan, kedisiplinan, dan kekompakan dalam baris berbaris.
-            </p>
-
-            {/* CTA Button */}
-            <Link 
-              to="/lakaraja/register"
-              className="glow-btn"
-              style={{
-                display: 'inline-block',
-                padding: '18px 50px',
-                fontSize: '1.2rem',
-                fontWeight: '700',
-                color: 'white',
-                background: 'linear-gradient(135deg, #f39c12 0%, #e74c3c 100%)',
-                border: 'none',
-                borderRadius: '50px',
-                textDecoration: 'none',
-                cursor: 'pointer',
-                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                boxShadow: '0 10px 30px rgba(243, 156, 18, 0.4)',
-                letterSpacing: '1px',
-                textTransform: 'uppercase'
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.transform = 'translateY(-5px) scale(1.05)';
-                e.target.style.boxShadow = '0 15px 40px rgba(243, 156, 18, 0.6)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.transform = 'translateY(0) scale(1)';
-                e.target.style.boxShadow = '0 10px 30px rgba(243, 156, 18, 0.4)';
-              }}
-            >
-              <i className="fas fa-user-plus" style={{ marginRight: '10px' }}></i>
-              Daftar Lakaraja 2026
-            </Link>
-
-            {/* Additional Info */}
-            <div style={{
-              marginTop: '2rem',
-              padding: '1.5rem',
-              background: 'rgba(243, 156, 18, 0.05)',
-              borderRadius: '10px',
-              border: '1px solid rgba(243, 156, 18, 0.15)'
-            }}>
-              <p style={{
-                color: 'rgba(255, 255, 255, 0.6)',
-                fontSize: '0.9rem',
-                margin: 0
-              }}>
-                <i className="fas fa-info-circle" style={{ marginRight: '8px', color: '#f39c12' }}></i>
-                Pendaftaran dibuka untuk umum. Peserta yang terdaftar akan mendapatkan akun khusus untuk mengikuti kompetisi.
-              </p>
-            </div>
-          </div>
-        </div>
       </section>
 
       {/* Footer */}

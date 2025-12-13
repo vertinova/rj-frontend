@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const canvasRef = useRef(null);
   const [formData, setFormData] = useState({
     username: '',
     password: ''
@@ -78,6 +79,136 @@ function Login() {
     }
   };
 
+  // Canvas animation effect
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const hexagons = [];
+    const hexagonCount = 12;
+    let mouseX = -1000;
+    let mouseY = -1000;
+    const avoidRadius = 150;
+
+    class Hexagon {
+      constructor() {
+        this.reset();
+        this.targetX = this.x;
+        this.targetY = this.y;
+      }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 30 + 15;
+        this.rotation = Math.random() * Math.PI * 2;
+        this.rotationSpeed = (Math.random() - 0.5) * 0.008;
+        this.vx = (Math.random() - 0.5) * 0.3;
+        this.vy = (Math.random() - 0.5) * 0.3;
+        this.opacity = Math.random() * 0.2 + 0.1;
+        this.targetX = this.x;
+        this.targetY = this.y;
+      }
+      
+      avoidMouse() {
+        const dx = this.x - mouseX;
+        const dy = this.y - mouseY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distance < avoidRadius) {
+          const pushForce = (avoidRadius - distance) / avoidRadius;
+          const angle = Math.atan2(dy, dx);
+          this.targetX = this.x + Math.cos(angle) * pushForce * 80;
+          this.targetY = this.y + Math.sin(angle) * pushForce * 80;
+        } else {
+          this.targetX = this.x + this.vx * 2;
+          this.targetY = this.y + this.vy * 2;
+        }
+      }
+      
+      update() {
+        this.x += (this.targetX - this.x) * 0.05;
+        this.y += (this.targetY - this.y) * 0.05;
+        this.x += this.vx;
+        this.y += this.vy;
+        this.rotation += this.rotationSpeed;
+        
+        if (this.x < -this.size) this.x = canvas.width + this.size;
+        if (this.x > canvas.width + this.size) this.x = -this.size;
+        if (this.y < -this.size) this.y = canvas.height + this.size;
+        if (this.y > canvas.height + this.size) this.y = -this.size;
+      }
+      
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotation);
+        
+        ctx.beginPath();
+        for (let i = 0; i < 6; i++) {
+          const angle = (Math.PI / 3) * i;
+          const x = this.size * Math.cos(angle);
+          const y = this.size * Math.sin(angle);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.strokeStyle = `rgba(243, 156, 18, ${this.opacity})`;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        
+        ctx.restore();
+      }
+    }
+
+    for (let i = 0; i < hexagonCount; i++) {
+      hexagons.push(new Hexagon());
+    }
+
+    const handleMouseMove = (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    };
+    
+    const handleMouseLeave = () => {
+      mouseX = -1000;
+      mouseY = -1000;
+    };
+
+    canvas.addEventListener('mousemove', handleMouseMove);
+    canvas.addEventListener('mouseleave', handleMouseLeave);
+
+    let animationFrameId;
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      hexagons.forEach(hexagon => {
+        hexagon.avoidMouse();
+        hexagon.update();
+        hexagon.draw();
+      });
+      
+      animationFrameId = requestAnimationFrame(animate);
+    }
+    animate();
+
+    const handleResize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    window.addEventListener('resize', handleResize);
+    
+    return () => {
+      canvas.removeEventListener('mousemove', handleMouseMove);
+      canvas.removeEventListener('mouseleave', handleMouseLeave);
+      window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, []);
+
   return (
     <div className="login-container">
       {/* Advanced Animated Background */}
@@ -89,139 +220,7 @@ function Login() {
       
       {/* Optimized Interactive Hexagon Canvas */}
       <canvas 
-        ref={(canvas) => {
-          if (!canvas) return;
-          const ctx = canvas.getContext('2d');
-          canvas.width = window.innerWidth;
-          canvas.height = window.innerHeight;
-
-          const hexagons = [];
-          const hexagonCount = 12;
-          let mouseX = -1000;
-          let mouseY = -1000;
-          const avoidRadius = 150;
-
-          class Hexagon {
-            constructor() {
-              this.reset();
-              this.targetX = this.x;
-              this.targetY = this.y;
-            }
-            reset() {
-              this.x = Math.random() * canvas.width;
-              this.y = Math.random() * canvas.height;
-              this.size = Math.random() * 30 + 15;
-              this.rotation = Math.random() * Math.PI * 2;
-              this.rotationSpeed = (Math.random() - 0.5) * 0.008;
-              this.vx = (Math.random() - 0.5) * 0.3;
-              this.vy = (Math.random() - 0.5) * 0.3;
-              this.opacity = Math.random() * 0.2 + 0.1;
-              this.targetX = this.x;
-              this.targetY = this.y;
-            }
-            
-            avoidMouse() {
-              const dx = this.x - mouseX;
-              const dy = this.y - mouseY;
-              const distance = Math.sqrt(dx * dx + dy * dy);
-              
-              if (distance < avoidRadius) {
-                // Calculate push direction
-                const pushForce = (avoidRadius - distance) / avoidRadius;
-                const angle = Math.atan2(dy, dx);
-                this.targetX = this.x + Math.cos(angle) * pushForce * 80;
-                this.targetY = this.y + Math.sin(angle) * pushForce * 80;
-              } else {
-                // Return to original path
-                this.targetX = this.x + this.vx * 2;
-                this.targetY = this.y + this.vy * 2;
-              }
-            }
-            
-            update() {
-              // Smooth movement to target
-              this.x += (this.targetX - this.x) * 0.05;
-              this.y += (this.targetY - this.y) * 0.05;
-              
-              // Normal movement
-              this.x += this.vx;
-              this.y += this.vy;
-              this.rotation += this.rotationSpeed;
-              
-              // Wrap around edges
-              if (this.x < -this.size) this.x = canvas.width + this.size;
-              if (this.x > canvas.width + this.size) this.x = -this.size;
-              if (this.y < -this.size) this.y = canvas.height + this.size;
-              if (this.y > canvas.height + this.size) this.y = -this.size;
-            }
-            
-            draw() {
-              ctx.save();
-              ctx.translate(this.x, this.y);
-              ctx.rotate(this.rotation);
-              
-              // Draw hexagon
-              ctx.beginPath();
-              for (let i = 0; i < 6; i++) {
-                const angle = (Math.PI / 3) * i;
-                const x = this.size * Math.cos(angle);
-                const y = this.size * Math.sin(angle);
-                if (i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-              }
-              ctx.closePath();
-              ctx.strokeStyle = `rgba(243, 156, 18, ${this.opacity})`;
-              ctx.lineWidth = 1.5;
-              ctx.stroke();
-              
-              ctx.restore();
-            }
-          }
-
-          // Initialize hexagons
-          for (let i = 0; i < hexagonCount; i++) {
-            hexagons.push(new Hexagon());
-          }
-
-          // Mouse tracking
-          const handleMouseMove = (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-          };
-          
-          const handleMouseLeave = () => {
-            mouseX = -1000;
-            mouseY = -1000;
-          };
-
-          canvas.addEventListener('mousemove', handleMouseMove);
-          canvas.addEventListener('mouseleave', handleMouseLeave);
-
-          function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            hexagons.forEach(hexagon => {
-              hexagon.avoidMouse();
-              hexagon.update();
-              hexagon.draw();
-            });
-            
-            requestAnimationFrame(animate);
-          }
-          animate();
-
-          const handleResize = () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-          };
-          window.addEventListener('resize', handleResize);
-          
-          return () => {
-            canvas.removeEventListener('mousemove', handleMouseMove);
-            canvas.removeEventListener('mouseleave', handleMouseLeave);
-            window.removeEventListener('resize', handleResize);
-          };
-        }}
+        ref={canvasRef}
         style={{
           position: 'fixed',
           top: 0,

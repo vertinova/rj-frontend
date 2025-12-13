@@ -135,6 +135,19 @@ const TarunaPendaftaran = () => {
     outline: 'none'
   };
 
+  const selectStyle = {
+    ...inputStyle,
+    cursor: 'pointer',
+    appearance: 'none',
+    WebkitAppearance: 'none',
+    MozAppearance: 'none',
+    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%233498db' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'right 12px center',
+    backgroundSize: '16px',
+    paddingRight: '40px'
+  };
+
   const labelStyle = {
     display: 'block',
     marginBottom: '8px',
@@ -216,7 +229,7 @@ const TarunaPendaftaran = () => {
                 value={formData.jenis_kelamin}
                 onChange={handleInputChange}
                 required
-                style={inputStyle}
+                style={selectStyle}
               >
                 <option value="L">Laki-laki</option>
                 <option value="P">Perempuan</option>
@@ -283,7 +296,7 @@ const TarunaPendaftaran = () => {
                 value={formData.pendidikan_terakhir}
                 onChange={handleInputChange}
                 required
-                style={inputStyle}
+                style={selectStyle}
               >
                 <option value="SMP">SMP</option>
                 <option value="SMA">SMA/SMK</option>
@@ -298,28 +311,13 @@ const TarunaPendaftaran = () => {
                 onChange={handleInputChange}
                 required
                 style={{
-                  ...inputStyle,
-                  backgroundImage: 'linear-gradient(135deg, rgba(52, 152, 219, 0.05) 0%, rgba(46, 204, 113, 0.05) 100%)',
-                  cursor: 'pointer',
-                  fontWeight: '600',
-                  appearance: 'none',
-                  WebkitAppearance: 'none',
-                  MozAppearance: 'none',
-                  backgroundRepeat: 'no-repeat',
-                  backgroundPosition: 'right 15px center',
-                  backgroundSize: '12px',
-                  paddingRight: '40px'
+                  ...selectStyle,
+                  fontWeight: '600'
                 }}
               >
-                <option value="" style={{ background: '#1a1a2e', color: 'rgba(255, 255, 255, 0.5)' }}>
-                  -- Pilih Lokasi Kampus --
-                </option>
-                <option value="Kampus 1" style={{ background: '#1a1a2e', color: 'white', padding: '10px', fontWeight: '600' }}>
-                  📍 Kampus 1
-                </option>
-                <option value="Kampus 2" style={{ background: '#1a1a2e', color: 'white', padding: '10px', fontWeight: '600' }}>
-                  📍 Kampus 2
-                </option>
+                <option value="">-- Pilih Lokasi Kampus --</option>
+                <option value="Kampus 1">📍 Kampus 1</option>
+                <option value="Kampus 2">📍 Kampus 2</option>
               </select>
               <style>{`
                 select::-ms-expand {

@@ -23,7 +23,9 @@ export default defineConfig({
     host: '0.0.0.0',
     hmr: {
       overlay: true,
-      clientPort: 5173
+      host: 'localhost',
+      port: 5173,
+      protocol: 'ws'
     },
     proxy: {
       '/api': {

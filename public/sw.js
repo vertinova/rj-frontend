@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rj-apps-v1';
+const CACHE_NAME = 'rj-apps-v2-new-dashboard';
 const urlsToCache = [
   '/',
   '/index.html',

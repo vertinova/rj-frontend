@@ -168,6 +168,19 @@ const TarunaAbsensi = () => {
     outline: 'none'
   };
 
+  const selectStyle = {
+    ...inputStyle,
+    cursor: 'pointer',
+    appearance: 'none',
+    WebkitAppearance: 'none',
+    MozAppearance: 'none',
+    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%233498db' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'right 12px center',
+    backgroundSize: '16px',
+    paddingRight: '40px'
+  };
+
   const labelStyle = {
     display: 'block',
     marginBottom: '8px',
@@ -481,7 +494,7 @@ const TarunaAbsensi = () => {
                 value={formData.status_absensi}
                 onChange={handleInputChange}
                 required
-                style={inputStyle}
+                style={selectStyle}
               >
                 <option value="hadir">Hadir</option>
                 <option value="izin">Izin</option>
@@ -499,44 +512,14 @@ const TarunaAbsensi = () => {
                     onChange={handleInputChange}
                     required
                     style={{
-                      ...inputStyle,
-                      backgroundImage: 'linear-gradient(135deg, rgba(52, 152, 219, 0.05) 0%, rgba(46, 204, 113, 0.05) 100%)',
-                      cursor: 'pointer',
-                      fontWeight: '600',
-                      appearance: 'none',
-                      WebkitAppearance: 'none',
-                      MozAppearance: 'none',
-                      backgroundRepeat: 'no-repeat',
-                      backgroundPosition: 'right 15px center',
-                      backgroundSize: '12px',
-                      paddingRight: '40px'
+                      ...selectStyle,
+                      fontWeight: '600'
                     }}
                   >
-                    <option value="" style={{ background: '#1a1a2e', color: 'rgba(255, 255, 255, 0.5)' }}>
-                      -- Pilih Lokasi Kampus --
-                    </option>
-                    <option value="Kampus 1" style={{ background: '#1a1a2e', color: 'white', padding: '10px', fontWeight: '600' }}>
-                      📍 Kampus 1
-                    </option>
-                    <option value="Kampus 2" style={{ background: '#1a1a2e', color: 'white', padding: '10px', fontWeight: '600' }}>
-                      📍 Kampus 2
-                    </option>
+                    <option value="">-- Pilih Lokasi Kampus --</option>
+                    <option value="Kampus 1">📍 Kampus 1</option>
+                    <option value="Kampus 2">📍 Kampus 2</option>
                   </select>
-                  <style>{`
-                    select::-ms-expand {
-                      display: none;
-                    }
-                    select {
-                      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%233498db' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-                    }
-                    select option {
-                      padding: 12px !important;
-                      background: #1a1a2e !important;
-                    }
-                    select option:hover {
-                      background: linear-gradient(135deg, rgba(52, 152, 219, 0.2) 0%, rgba(46, 204, 113, 0.2) 100%) !important;
-                    }
-                  `}</style>
                 </div>
 
                 <div style={{ marginBottom: '20px' }}>

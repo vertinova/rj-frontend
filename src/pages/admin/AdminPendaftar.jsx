@@ -309,7 +309,7 @@ const AdminPendaftar = () => {
               <select
                 value={filters.status}
                 onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value, page: 1 }))}
-                className="w-full pl-12 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-purple-500 transition-colors appearance-none cursor-pointer"
+                className="w-full pl-12 pr-10 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white focus:outline-none focus:border-purple-500 transition-all duration-300 hover:border-purple-500/50 hover:bg-gray-800/80 cursor-pointer"
               >
                 <option value="all">Semua Status</option>
                 <option value="pending">Pending</option>

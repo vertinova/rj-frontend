@@ -623,21 +623,29 @@ const FormField = ({ label, name, type = 'text', value, onChange, required, plac
           required={required}
           style={{
             width: '100%',
-          padding: '12px 15px',
-          background: 'rgba(255, 255, 255, 0.05)',
-          border: '1px solid rgba(255, 255, 255, 0.15)',
-          borderRadius: '10px',
-          color: 'white',
-          fontSize: '0.95rem',
-          cursor: 'pointer'
-        }}
-      >
-        {options.map(opt => (
-          <option key={opt.value} value={opt.value} style={{ background: '#16213e' }}>
-            {opt.label}
-          </option>
-        ))}
-      </select>
+            padding: '12px 40px 12px 15px',
+            background: 'rgba(255, 255, 255, 0.05)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            borderRadius: '10px',
+            color: 'white',
+            fontSize: '0.95rem',
+            cursor: 'pointer',
+            appearance: 'none',
+            WebkitAppearance: 'none',
+            MozAppearance: 'none',
+            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%233498db' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'right 12px center',
+            backgroundSize: '16px',
+            transition: 'all 0.3s ease'
+          }}
+        >
+          {options.map(opt => (
+            <option key={opt.value} value={opt.value} style={{ background: '#16213e' }}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
     ) : type === 'date' ? (
       <>
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
