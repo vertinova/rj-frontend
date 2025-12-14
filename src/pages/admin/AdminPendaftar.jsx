@@ -142,7 +142,7 @@ const AdminPendaftar = () => {
               {pendaftar.foto_diri && (
                 <div className="col-span-2 flex justify-center">
                   <img
-                    src={`http://localhost:5000/uploads/${pendaftar.foto_diri}`}
+                    src={`${import.meta.env.VITE_UPLOADS_URL || 'https://api.paskibmansabo.com/uploads'}/${pendaftar.foto_diri}`}
                     alt={pendaftar.nama_lengkap}
                     className="w-32 h-32 object-cover rounded-full border-4 border-purple-500/50"
                   />

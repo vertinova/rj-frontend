@@ -697,7 +697,7 @@ const Home = () => {
   useEffect(() => {
     const fetchLakarajaData = async () => {
       try {
-        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+        const API_URL = import.meta.env.VITE_API_URL || 'https://api.paskibmansabo.com/api';
         
         // Fetch quota
         const quotaRes = await axios.get(`${API_URL}/lakaraja/kuota`);

@@ -218,7 +218,7 @@ const AdminAbsensi = () => {
                         <td className="px-6 py-4 text-sm">
                           {item.foto_absensi ? (
                             <button
-                              onClick={() => handleImageClick(`http://localhost:5000/uploads/absensi/${item.foto_absensi}`)}
+                              onClick={() => handleImageClick(`${import.meta.env.VITE_UPLOADS_URL || 'https://api.paskibmansabo.com/uploads'}/absensi/${item.foto_absensi}`)}
                               className="px-3 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300"
                             >
                               <FaImage className="inline mr-1" />

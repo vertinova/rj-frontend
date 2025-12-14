@@ -221,7 +221,7 @@ const DocumentCard = ({ icon, label, filename, type }) => (
   }}
   onClick={() => {
     if (filename) {
-      window.open(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/uploads/${filename}`, '_blank');
+      window.open(`${import.meta.env.VITE_API_URL || 'https://api.paskibmansabo.com'}/uploads/${filename}`, '_blank');
     }
   }}>
     <i className={`fas ${icon}`} style={{ fontSize: '2.5rem', color: '#3498db', marginBottom: '12px' }}></i>

@@ -57,7 +57,7 @@ const TarunaProfil = () => {
         <div style={{ position: 'relative', width: '120px', height: '120px', margin: '0 auto 20px' }}>
           {profileData?.foto_diri ? (
             <img 
-              src={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/uploads/${profileData.foto_diri}`}
+              src={`${import.meta.env.VITE_API_URL || 'https://api.paskibmansabo.com'}/uploads/${profileData.foto_diri}`}
               alt="Foto Profil"
               style={{
                 width: '120px',
@@ -620,7 +620,7 @@ const DocumentStatus = ({ label, fileName, uploaded }) => (
     </div>
     {uploaded && (
       <a
-        href={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/uploads/${fileName}`}
+        href={`${import.meta.env.VITE_API_URL || 'https://api.paskibmansabo.com'}/uploads/${fileName}`}
         target="_blank"
         rel="noopener noreferrer"
         style={{

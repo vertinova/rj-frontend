@@ -78,9 +78,9 @@ const TarunaEditProfil = () => {
         });
         // Set existing file preview URLs
         setPreviewUrls({
-          foto_diri: data.foto_diri ? `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/uploads/${data.foto_diri}` : null,
-          surat_izin_orangtua: data.surat_izin_orangtua ? `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/uploads/${data.surat_izin_orangtua}` : null,
-          surat_keterangan_sehat: data.surat_keterangan_sehat ? `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/uploads/${data.surat_keterangan_sehat}` : null
+          foto_diri: data.foto_diri ? `${import.meta.env.VITE_API_URL || 'https://api.paskibmansabo.com'}/uploads/${data.foto_diri}` : null,
+          surat_izin_orangtua: data.surat_izin_orangtua ? `${import.meta.env.VITE_API_URL || 'https://api.paskibmansabo.com'}/uploads/${data.surat_izin_orangtua}` : null,
+          surat_keterangan_sehat: data.surat_keterangan_sehat ? `${import.meta.env.VITE_API_URL || 'https://api.paskibmansabo.com'}/uploads/${data.surat_keterangan_sehat}` : null
         });
       }
     } catch (error) {

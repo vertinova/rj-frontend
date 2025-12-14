@@ -776,7 +776,7 @@ const AbsensiCard = ({ data }) => {
 
       {data.foto_absensi && (
         <button
-          onClick={() => window.open(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/uploads/absensi/${data.foto_absensi}`, '_blank')}
+          onClick={() => window.open(`${import.meta.env.VITE_API_URL || 'https://api.paskibmansabo.com'}/uploads/absensi/${data.foto_absensi}`, '_blank')}
           style={{
             padding: '8px 16px',
             background: 'rgba(52, 152, 219, 0.2)',

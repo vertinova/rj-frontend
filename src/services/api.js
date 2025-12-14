@@ -62,7 +62,7 @@ export default api
 
 // Helper function to get uploads URL
 export const getUploadsUrl = (path) => {
-  const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+  const baseUrl = import.meta.env.VITE_API_URL || 'https://api.paskibmansabo.com'
   // Remove /api suffix if exists
   const uploadsBaseUrl = baseUrl.replace('/api', '')
   return `${uploadsBaseUrl}/uploads/${path}`

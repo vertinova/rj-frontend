@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://api.paskibmansabo.com/api';
 
 // Create axios instance for lakaraja
 const lakarajaApi = axios.create({
@@ -168,17 +168,14 @@ const LakarajaDashboard = () => {
       return filename;
     }
     
-    // Get base URL without /api suffix for file uploads
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-    const baseUrl = apiUrl.replace('/api', ''); // Remove /api from base URL
+    // Get uploads URL from environment or use default
+    const uploadsUrl = import.meta.env.VITE_UPLOADS_URL || 'https://api.paskibmansabo.com/uploads';
     
-    // If filename already includes /uploads/, it's a full path
-    if (filename.startsWith('/uploads/')) {
-      return `${baseUrl}${filename}`;
-    }
+    // If filename already includes /uploads/ or uploads/, strip it
+    const cleanFilename = filename.replace(/^\/?uploads\/lakaraja\//, '').replace(/^\/?uploads\//, '');
     
-    // Otherwise, prepend the upload path
-    return `${baseUrl}/uploads/lakaraja/${filename}`;
+    // Return complete URL
+    return `${uploadsUrl}/lakaraja/${cleanFilename}`;
   };
 
   const handleInputChange = (e) => {
