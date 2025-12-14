@@ -62,8 +62,14 @@ export default api
 
 // Helper function to get uploads URL
 export const getUploadsUrl = (path) => {
-  const baseUrl = import.meta.env.VITE_API_URL || 'https://api.paskibmansabo.com'
-  // Remove /api suffix if exists
-  const uploadsBaseUrl = baseUrl.replace('/api', '')
-  return `${uploadsBaseUrl}/uploads/${path}`
+  const uploadsUrl = import.meta.env.VITE_UPLOADS_URL || 'https://api.paskibmansabo.com/uploads'
+  
+  // Clean path - remove any leading slashes or 'uploads/' prefix
+  let cleanPath = path
+  if (cleanPath) {
+    cleanPath = cleanPath.replace(/^\/+/, '') // Remove leading slashes
+    cleanPath = cleanPath.replace(/^uploads\//, '') // Remove 'uploads/' prefix if exists
+  }
+  
+  return `${uploadsUrl}/${cleanPath}`
 }

@@ -2127,6 +2127,59 @@ const Home = () => {
             ))}
           </div>
 
+          {/* Download Juknis Button */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            marginBottom: '3rem'
+          }}>
+            <a
+              href="/JUKLAK_JUKNIS_LAKARAJA_S2.pdf"
+              download="JUKLAK_JUKNIS_LAKARAJA_S2.pdf"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '16px 32px',
+                background: 'linear-gradient(135deg, rgba(52, 152, 219, 0.2) 0%, rgba(41, 128, 185, 0.15) 100%)',
+                backdropFilter: 'blur(10px)',
+                border: '2px solid rgba(52, 152, 219, 0.4)',
+                borderRadius: '50px',
+                color: 'white',
+                fontSize: '1.1rem',
+                fontWeight: '700',
+                textDecoration: 'none',
+                transition: 'all 0.3s ease',
+                boxShadow: '0 8px 25px rgba(52, 152, 219, 0.3)',
+                letterSpacing: '0.5px',
+                cursor: 'pointer'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-3px) scale(1.05)';
+                e.currentTarget.style.borderColor = '#3498db';
+                e.currentTarget.style.boxShadow = '0 12px 35px rgba(52, 152, 219, 0.5)';
+                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(52, 152, 219, 0.3) 0%, rgba(41, 128, 185, 0.25) 100%)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                e.currentTarget.style.borderColor = 'rgba(52, 152, 219, 0.4)';
+                e.currentTarget.style.boxShadow = '0 8px 25px rgba(52, 152, 219, 0.3)';
+                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(52, 152, 219, 0.2) 0%, rgba(41, 128, 185, 0.15) 100%)';
+              }}
+            >
+              <i className="fas fa-file-download" style={{
+                fontSize: '1.4rem',
+                color: '#3498db'
+              }}></i>
+              <span>Download Juknis & Juklak</span>
+              <i className="fas fa-arrow-down" style={{
+                fontSize: '0.9rem',
+                color: '#3498db',
+                animation: 'bounce 2s infinite'
+              }}></i>
+            </a>
+          </div>
+
           {/* Quota Cards - Horizontal Compact Design */}
           <div style={{
             display: 'flex',

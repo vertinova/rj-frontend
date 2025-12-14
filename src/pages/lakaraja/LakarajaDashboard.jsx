@@ -1544,6 +1544,41 @@ const LakarajaDashboard = () => {
                 </div>
               </div>
 
+              {/* Informasi Rekening Pembayaran */}
+              <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/30 rounded-xl p-4 mb-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <i className="fas fa-university text-blue-400 text-lg"></i>
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="text-sm font-bold text-white mb-2 flex items-center gap-2">
+                      <i className="fas fa-info-circle text-blue-400"></i>
+                      Informasi Rekening Pembayaran
+                    </h4>
+                    <div className="space-y-2">
+                      <div className="bg-white/5 rounded-lg p-3 border border-white/10">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-xs text-white/60">Bank</span>
+                          <span className="text-xs font-semibold text-blue-400">Bank Jago</span>
+                        </div>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-xs text-white/60">No. Rekening</span>
+                          <span className="text-sm font-mono font-bold text-white">106874016854</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-white/60">Atas Nama</span>
+                          <span className="text-xs font-semibold text-white">Guntur Guruh Surah Negara</span>
+                        </div>
+                      </div>
+                      <div className="flex items-start gap-2 text-xs text-yellow-400 bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-2">
+                        <i className="fas fa-exclamation-triangle mt-0.5 flex-shrink-0"></i>
+                        <span>Pastikan transfer sesuai nominal dan upload bukti pembayaran dengan jelas</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Upload Bukti Pembayaran */}
               <div>
                 <label className="block text-sm font-semibold text-white/80 mb-2">
