@@ -15,6 +15,7 @@ const ManagePendaftaran = () => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [activeTab, setActiveTab] = useState('pendaftaran'); // 'pendaftaran' or 'daftar-ulang'
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -24,7 +25,7 @@ const ManagePendaftaran = () => {
   useEffect(() => {
     checkAuth();
     loadPendaftaran();
-  }, [filter, currentPage, itemsPerPage]);
+  }, [filter, currentPage, itemsPerPage, activeTab]);
 
   const checkAuth = () => {
     const token = localStorage.getItem('lakaraja_token');
@@ -56,7 +57,14 @@ const ManagePendaftaran = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       
-      const allData = response.data.data;
+      let allData = response.data.data;
+      
+      // Filter based on active tab
+      if (activeTab === 'daftar-ulang') {
+        // Only show data where team is complete
+        allData = allData.filter(item => item.is_team_complete === 1);
+      }
+      
       setTotalItems(allData.length);
       
       // Client-side pagination
@@ -125,31 +133,51 @@ const ManagePendaftaran = () => {
     
     try {
       const token = localStorage.getItem('lakaraja_token');
-      await api.delete(`/lakaraja/panitia/${deleteTarget.id}`, {
+      
+      // Different endpoint based on active tab
+      const endpoint = activeTab === 'daftar-ulang' 
+        ? `/lakaraja/panitia/team/${deleteTarget.id}`  // Reset team data only
+        : `/lakaraja/panitia/${deleteTarget.id}`;      // Delete entire registration
+      
+      await api.delete(endpoint, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
-      toast.success('Pendaftaran berhasil dihapus');
+      const successMessage = activeTab === 'daftar-ulang'
+        ? 'Data daftar ulang berhasil direset'
+        : 'Pendaftaran berhasil dihapus';
+      
+      toast.success(successMessage);
       setShowDeleteModal(false);
       setDeleteTarget(null);
       loadPendaftaran();
     } catch (error) {
       console.error('Error deleting registration:', error);
-      toast.error(error.response?.data?.message || 'Gagal menghapus pendaftaran');
+      toast.error(error.response?.data?.message || 'Gagal menghapus data');
     }
   };
 
   const getKategoriBadge = (kategori) => {
     const badges = {
-      SD: { color: 'yellow', icon: 'child' },
-      SMP: { color: 'cyan', icon: 'user-graduate' },
-      SMA: { color: 'pink', icon: 'graduation-cap' }
+      SD: { 
+        className: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
+        icon: 'child' 
+      },
+      SMP: { 
+        className: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
+        icon: 'user-graduate' 
+      },
+      SMA: { 
+        className: 'bg-pink-500/20 text-pink-400 border-pink-500/30',
+        icon: 'graduation-cap' 
+      }
     };
     const badge = badges[kategori] || badges.SMA;
     
     return (
-      <span className={`px-3 py-1 rounded-full text-xs font-semibold bg-${badge.color}-500/20 text-${badge.color}-400 border border-${badge.color}-500/30`}>
-        <i className={`fas fa-${badge.icon} mr-1`}></i>{kategori}
+      <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border whitespace-nowrap ${badge.className}`}>
+        <i className={`fas fa-${badge.icon}`}></i>
+        <span className="hidden sm:inline">{kategori}</span>
       </span>
     );
   };
@@ -175,16 +203,59 @@ const ManagePendaftaran = () => {
 
       {/* Content */}
       <div className="container mx-auto px-4 py-8">
+        {/* Tabs */}
+        <div className="mb-6 bg-gradient-to-br from-zinc-900/90 to-black/90 border border-white/10 rounded-xl p-2 flex gap-2">
+          <button
+            onClick={() => {
+              setActiveTab('pendaftaran');
+              setCurrentPage(1);
+            }}
+            className={`flex-1 px-6 py-3 rounded-lg transition-all font-semibold ${
+              activeTab === 'pendaftaran'
+                ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/50'
+                : 'text-white/60 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <i className="fas fa-list-check mr-2"></i>
+            Daftar Pendaftaran
+          </button>
+          <button
+            onClick={() => {
+              setActiveTab('daftar-ulang');
+              setCurrentPage(1);
+            }}
+            className={`flex-1 px-6 py-3 rounded-lg transition-all font-semibold ${
+              activeTab === 'daftar-ulang'
+                ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/50'
+                : 'text-white/60 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <i className="fas fa-users mr-2"></i>
+            Data Daftar Ulang
+          </button>
+        </div>
+
         {/* Quick Info */}
         <div className="mb-6 bg-blue-500/10 border border-blue-500/30 rounded-xl p-6">
           <div className="flex items-start gap-3">
-            <i className="fas fa-info-circle text-blue-400 text-xl mt-1"></i>
+            <i className={`${activeTab === 'pendaftaran' ? 'fa-info-circle' : 'fa-users'} fas text-blue-400 text-xl mt-1`}></i>
             <div>
-              <h4 className="text-blue-400 font-bold mb-2">Sistem Pendaftaran Auto-Approve</h4>
+              <h4 className="text-blue-400 font-bold mb-2">
+                {activeTab === 'pendaftaran' ? 'Sistem Pendaftaran Auto-Approve' : 'Data Daftar Ulang Peserta'}
+              </h4>
               <p className="text-white/70 text-sm">
-                Pendaftaran menggunakan sistem <strong className="text-white">siapa cepat dia dapat</strong>. 
-                Semua pendaftaran yang masuk akan otomatis diterima sampai kuota penuh.
-                Panitia dapat melihat data pendaftaran dan menghubungi peserta jika diperlukan.
+                {activeTab === 'pendaftaran' ? (
+                  <>
+                    Pendaftaran menggunakan sistem <strong className="text-white">siapa cepat dia dapat</strong>. 
+                    Semua pendaftaran yang masuk akan otomatis diterima sampai kuota penuh.
+                    Panitia dapat melihat data pendaftaran dan menghubungi peserta jika diperlukan.
+                  </>
+                ) : (
+                  <>
+                    Menampilkan peserta yang sudah melengkapi data daftar ulang (data anggota team, foto team, dan surat keterangan).
+                    Klik "Lihat Detail" untuk melihat foto-foto anggota dan dokumen lengkap.
+                  </>
+                )}
               </p>
             </div>
           </div>
@@ -284,6 +355,9 @@ const ManagePendaftaran = () => {
                     <th className="px-6 py-4 text-left text-white font-semibold">Nama Sekolah</th>
                     <th className="px-6 py-4 text-left text-white font-semibold">Nama Satuan</th>
                     <th className="px-6 py-4 text-left text-white font-semibold">Kategori</th>
+                    {activeTab === 'daftar-ulang' && (
+                      <th className="px-6 py-4 text-left text-white font-semibold">Jumlah Anggota</th>
+                    )}
                     <th className="px-6 py-4 text-left text-white font-semibold">No. Urut</th>
                     <th className="px-6 py-4 text-left text-white font-semibold">Tanggal Daftar</th>
                     <th className="px-6 py-4 text-center text-white font-semibold">Aksi</th>
@@ -292,12 +366,28 @@ const ManagePendaftaran = () => {
                 <tbody>
                   {pendaftaran.map((item, index) => {
                     const globalIndex = (currentPage - 1) * itemsPerPage + index;
+                    let anggotaCount = 0;
+                    try {
+                      if (item.data_anggota) {
+                        anggotaCount = JSON.parse(item.data_anggota).length;
+                      }
+                    } catch (e) {
+                      console.error('Error parsing data_anggota:', e);
+                    }
+                    
                     return (
                     <tr key={item.id} className="border-t border-white/5 hover:bg-white/5 transition-colors">
                       <td className="px-6 py-4 text-white/80">{globalIndex + 1}</td>
                       <td className="px-6 py-4 text-white">{item.nama_sekolah}</td>
                       <td className="px-6 py-4 text-white">{item.nama_satuan}</td>
                       <td className="px-6 py-4">{getKategoriBadge(item.kategori)}</td>
+                      {activeTab === 'daftar-ulang' && (
+                        <td className="px-6 py-4">
+                          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/20 text-purple-400 border border-purple-500/30">
+                            <i className="fas fa-users mr-1"></i>{anggotaCount} orang
+                          </span>
+                        </td>
+                      )}
                       <td className="px-6 py-4">
                         <span className="px-3 py-1 rounded-full text-xs font-semibold bg-green-500/20 text-green-400 border border-green-500/30">
                           #{globalIndex + 1}
@@ -324,9 +414,9 @@ const ManagePendaftaran = () => {
                           <button
                             onClick={() => handleDeleteClick(item)}
                             className="px-3 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-lg transition-all"
-                            title="Hapus Pendaftaran"
+                            title={activeTab === 'daftar-ulang' ? 'Reset Data Daftar Ulang' : 'Hapus Pendaftaran'}
                           >
-                            <i className="fas fa-trash"></i>
+                            <i className={`fas ${activeTab === 'daftar-ulang' ? 'fa-redo' : 'fa-trash'}`}></i>
                           </button>
                         </div>
                       </td>
@@ -515,6 +605,79 @@ const ManagePendaftaran = () => {
                   />
                 </div>
               )}
+              
+              {/* Data Daftar Ulang Section */}
+              {selectedPendaftaran.is_team_complete === 1 && (
+                <>
+                  <div className="mt-6 pt-6 border-t border-white/10">
+                    <h4 className="text-orange-400 font-bold text-lg mb-4">
+                      <i className="fas fa-users mr-2"></i>Data Daftar Ulang
+                    </h4>
+                  </div>
+                  
+                  <div>
+                    <label className="text-white/60 text-sm">Jumlah Pasukan</label>
+                    <p className="text-white font-semibold">{selectedPendaftaran.jumlah_pasukan || '-'} orang</p>
+                  </div>
+                  
+                  {selectedPendaftaran.surat_keterangan && (
+                    <div>
+                      <label className="text-white/60 text-sm">Surat Keterangan</label>
+                      <img
+                        src={getUploadsUrl(`lakaraja/${selectedPendaftaran.surat_keterangan}`)}
+                        alt="Surat Keterangan"
+                        className="mt-2 max-w-full rounded-lg border border-white/10 cursor-pointer hover:opacity-80"
+                        onClick={() => window.open(getUploadsUrl(`lakaraja/${selectedPendaftaran.surat_keterangan}`), '_blank')}
+                      />
+                    </div>
+                  )}
+                  
+                  {selectedPendaftaran.foto_team && (
+                    <div>
+                      <label className="text-white/60 text-sm">Foto Team</label>
+                      <img
+                        src={getUploadsUrl(`lakaraja/${selectedPendaftaran.foto_team}`)}
+                        alt="Foto Team"
+                        className="mt-2 max-w-full rounded-lg border border-white/10 cursor-pointer hover:opacity-80"
+                        onClick={() => window.open(getUploadsUrl(`lakaraja/${selectedPendaftaran.foto_team}`), '_blank')}
+                      />
+                    </div>
+                  )}
+                  
+                  {selectedPendaftaran.data_anggota && (
+                    <div>
+                      <label className="text-white/60 text-sm mb-2 block">Data Anggota ({JSON.parse(selectedPendaftaran.data_anggota).length} orang)</label>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {JSON.parse(selectedPendaftaran.data_anggota).map((anggota, idx) => (
+                          <div key={idx} className="bg-white/5 border border-white/10 rounded-lg p-3">
+                            <img
+                              src={getUploadsUrl(`lakaraja/${anggota.foto}`)}
+                              alt={`Anggota ${idx + 1}`}
+                              className="w-full aspect-square object-cover rounded-lg mb-2 cursor-pointer hover:opacity-80"
+                              onClick={() => window.open(getUploadsUrl(`lakaraja/${anggota.foto}`), '_blank')}
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect width="200" height="200" fill="%23333"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14" fill="%23999"%3EFoto tidak tersedia%3C/text%3E%3C/svg%3E';
+                              }}
+                            />
+                            <p className="text-white text-sm font-semibold text-center">{anggota.nama}</p>
+                            <p className="text-white/60 text-xs text-center">{anggota.jabatan}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+              
+              {selectedPendaftaran.is_team_complete === 0 && (
+                <div className="mt-6 pt-6 border-t border-white/10">
+                  <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 text-center">
+                    <i className="fas fa-hourglass-half text-yellow-400 text-2xl mb-2"></i>
+                    <p className="text-yellow-400 text-sm">Peserta belum melengkapi data daftar ulang</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -526,21 +689,29 @@ const ManagePendaftaran = () => {
           <div className="bg-gradient-to-br from-zinc-900 to-black border-2 border-red-500/50 rounded-xl p-6 max-w-md w-full shadow-2xl">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center">
-                <i className="fas fa-exclamation-triangle text-red-400 text-xl"></i>
+                <i className={`fas ${activeTab === 'daftar-ulang' ? 'fa-redo' : 'fa-exclamation-triangle'} text-red-400 text-xl`}></i>
               </div>
-              <h3 className="text-white text-xl font-bold">Konfirmasi Hapus</h3>
+              <h3 className="text-white text-xl font-bold">
+                {activeTab === 'daftar-ulang' ? 'Konfirmasi Reset Data' : 'Konfirmasi Hapus'}
+              </h3>
             </div>
             
             <div className="mb-6">
               <p className="text-white/80 mb-3">
-                Apakah Anda yakin ingin menghapus pendaftaran ini?
+                {activeTab === 'daftar-ulang' 
+                  ? 'Apakah Anda yakin ingin mereset data daftar ulang ini? Peserta tetap terdaftar tapi harus mengisi ulang data team.'
+                  : 'Apakah Anda yakin ingin menghapus pendaftaran ini? Peserta akan dihapus dari kompetisi.'
+                }
               </p>
               <div className="bg-white/5 border border-red-500/30 rounded-lg p-3">
                 <p className="text-white font-semibold">{deleteTarget.nama_satuan}</p>
                 <p className="text-white/60 text-sm">{deleteTarget.nama_sekolah}</p>
                 <p className="text-red-400 text-xs mt-2">
                   <i className="fas fa-warning mr-1"></i>
-                  Tindakan ini tidak dapat dibatalkan
+                  {activeTab === 'daftar-ulang'
+                    ? 'Data team akan dihapus, tapi pendaftaran tetap ada'
+                    : 'Tindakan ini tidak dapat dibatalkan'
+                  }
                 </p>
               </div>
             </div>
@@ -560,8 +731,8 @@ const ManagePendaftaran = () => {
                 onClick={handleDelete}
                 className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all shadow-lg shadow-red-500/50"
               >
-                <i className="fas fa-trash mr-2"></i>
-                Hapus
+                <i className={`fas ${activeTab === 'daftar-ulang' ? 'fa-redo' : 'fa-trash'} mr-2`}></i>
+                {activeTab === 'daftar-ulang' ? 'Reset Data' : 'Hapus'}
               </button>
             </div>
           </div>

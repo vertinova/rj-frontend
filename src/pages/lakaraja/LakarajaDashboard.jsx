@@ -137,8 +137,13 @@ const LakarajaDashboard = () => {
         setRegistrationData(null);
       }
     } catch (error) {
-      console.error('Error fetching registration:', error);
-      setRegistrationData(null);
+      // 404 is normal - user hasn't registered yet
+      if (error.response?.status === 404) {
+        setRegistrationData(null);
+      } else {
+        console.error('Error fetching registration:', error);
+        setRegistrationData(null);
+      }
     }
   };
 
