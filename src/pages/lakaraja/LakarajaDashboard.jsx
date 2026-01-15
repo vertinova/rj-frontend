@@ -99,6 +99,34 @@ const LakarajaDashboard = () => {
     fetchQuotaInfo();
   }, []);
 
+  // Refresh quota when window regains focus (e.g., returning from another page)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        fetchQuotaInfo();
+      }
+    };
+
+    const handleFocus = () => {
+      fetchQuotaInfo();
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, []);
+
+  // Refresh quota when returning to home tab
+  useEffect(() => {
+    if (activeTab === 'home' && user) {
+      fetchQuotaInfo();
+    }
+  }, [activeTab]);
+
   // Countdown timer effect
   useEffect(() => {
     const calculateCountdown = () => {
@@ -390,7 +418,19 @@ const LakarajaDashboard = () => {
       };
     }
     
-    // Sistem auto-approve: semua pendaftaran langsung terdaftar
+    // Check if in waiting list
+    if (registrationData.status_kuota === 'waiting_list') {
+      return {
+        text: 'Waiting List',
+        color: 'from-yellow-500 to-orange-500',
+        bgColor: 'bg-yellow-100',
+        textColor: 'text-yellow-600',
+        icon: 'fa-hourglass-half',
+        description: `Kuota kategori ${registrationData.kategori} sudah penuh. Anda berada di posisi #${registrationData.waitlist_position || '?'} waiting list dan akan dipromosikan otomatis jika ada slot tersedia.`
+      };
+    }
+    
+    // Approved status
     return { 
       text: 'Terdaftar', 
       color: 'from-green-500 to-emerald-600',
@@ -471,8 +511,33 @@ const LakarajaDashboard = () => {
 
   const renderHomeContent = () => (
     <div className="space-y-6">
+      {/* Waiting List Alert */}
+      {registrationData && registrationData.status_kuota === 'waiting_list' && (
+        <div className="bg-gradient-to-r from-yellow-500 to-orange-500 rounded-2xl p-4 shadow-xl border border-yellow-400/20 animate-pulse">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
+              <i className="fas fa-hourglass-half text-white text-lg"></i>
+            </div>
+            <div className="flex-1">
+              <h4 className="text-white font-bold mb-1 flex items-center gap-2">
+                <i className="fas fa-list-ol"></i>
+                Anda Di Waiting List
+              </h4>
+              <p className="text-white/90 text-sm mb-2">
+                Kuota kategori <strong>{registrationData.kategori}</strong> sudah penuh. 
+                Anda berada di posisi <strong>#{registrationData.waitlist_position || '?'}</strong> dalam daftar tunggu.
+              </p>
+              <p className="text-white/90 text-xs bg-white/10 rounded-lg p-2">
+                <i className="fas fa-info-circle mr-1"></i>
+                Anda akan otomatis dipromosikan ke peserta terdaftar jika ada slot yang tersedia atau panitia menambah kuota.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Alert: Daftar Ulang - Show if registered but team data not complete */}
-      {registrationData && !registrationData.is_team_complete && (
+      {registrationData && !registrationData.is_team_complete && registrationData.status_kuota === 'approved' && (
         <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl p-4 shadow-xl border border-orange-400/20 animate-pulse">
           <div className="flex items-start gap-3">
             <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -793,7 +858,7 @@ const LakarajaDashboard = () => {
               </li>
               <li className="flex items-start gap-2 text-white/80 text-sm">
                 <i className="fas fa-check-circle text-amber-400 mt-0.5"></i>
-                <span>Registration fee: <strong>Rp 650.000</strong> per team</span>
+                <span>Registration fee: <strong>SD: Rp 500.000 | SMP/SMA: Rp 650.000</strong> per team</span>
               </li>
               <li className="flex items-start gap-2 text-white/80 text-sm">
                 <i className="fas fa-check-circle text-amber-400 mt-0.5"></i>
@@ -1427,6 +1492,7 @@ const LakarajaDashboard = () => {
             </div>
 
             {/* Payment Info Banner */}
+            {/* Biaya Pendaftaran - Dynamic based on kategori */}
             <div className="mx-5 mt-5 bg-gradient-to-r from-red-500 to-orange-500 rounded-2xl p-4 text-white">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
@@ -1434,7 +1500,16 @@ const LakarajaDashboard = () => {
                 </div>
                 <div>
                   <p className="text-sm opacity-90">Biaya Pendaftaran</p>
-                  <p className="text-2xl font-bold">Rp 650.000</p>
+                  <p className="text-2xl font-bold">
+                    {formData.kategori === 'SD' ? 'Rp 500.000' : 
+                     formData.kategori === 'SMP' || formData.kategori === 'SMA' ? 'Rp 650.000' : 
+                     'Pilih Kategori'}
+                  </p>
+                  {formData.kategori && (
+                    <p className="text-xs opacity-75 mt-1">
+                      {formData.kategori === 'SD' ? '(Kategori SD)' : `(Kategori ${formData.kategori})`}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

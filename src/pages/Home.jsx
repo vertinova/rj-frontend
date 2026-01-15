@@ -1855,6 +1855,41 @@ const Home = () => {
             textAlign: 'left', 
             animation: 'fadeIn 1s ease-out'
           }}>
+            {/* Supported By Badge */}
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '12px',
+              padding: '12px 24px',
+              background: 'rgba(255, 255, 255, 0.1)',
+              backdropFilter: 'blur(10px)',
+              borderRadius: '50px',
+              border: '2px solid rgba(255, 255, 255, 0.2)',
+              marginBottom: '30px',
+              animation: 'fadeIn 0.8s ease-out',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
+            }}>
+              <span style={{
+                color: 'rgba(255, 255, 255, 0.7)',
+                fontSize: '0.9rem',
+                fontWeight: '600',
+                letterSpacing: '1px',
+                textTransform: 'uppercase'
+              }}>
+                Supported by
+              </span>
+              <img 
+                src="/Logo SIMPASKOR.PNG" 
+                alt="SIMPASKOR Logo" 
+                style={{
+                  height: '35px',
+                  width: 'auto',
+                  objectFit: 'contain',
+                  filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.5))'
+                }}
+              />
+            </div>
+
             <h2 className="hero-title gradient-text" style={{ 
               fontSize: '3.5rem', 
               fontWeight: '700',
@@ -2282,6 +2317,47 @@ const Home = () => {
                       {quota.isFull ? '❌ Kuota Penuh' : `✅ ${quota.available} Slot Tersedia`}
                     </span>
                   </div>
+                  
+                  {/* Waiting List Info - Show if quota is full and has waiting list */}
+                  {quota.isFull && quota.waitingList > 0 && (
+                    <div style={{
+                      textAlign: 'center',
+                      padding: '0.5rem',
+                      background: 'rgba(241, 196, 15, 0.2)',
+                      borderRadius: '8px',
+                      border: '1px solid rgba(241, 196, 15, 0.3)',
+                      marginTop: '0.5rem'
+                    }}>
+                      <span style={{
+                        color: '#f1c40f',
+                        fontWeight: '600',
+                        fontSize: '0.8rem'
+                      }}>
+                        <i className="fas fa-hourglass-half" style={{ marginRight: '0.3rem' }}></i>
+                        {quota.waitingList} Waiting List
+                      </span>
+                    </div>
+                  )}
+                  
+                  {/* Info: Waiting List Open */}
+                  {quota.isFull && (
+                    <div style={{
+                      textAlign: 'center',
+                      padding: '0.4rem',
+                      background: 'rgba(52, 152, 219, 0.15)',
+                      borderRadius: '6px',
+                      marginTop: '0.5rem'
+                    }}>
+                      <span style={{
+                        color: '#3498db',
+                        fontSize: '0.75rem',
+                        fontWeight: '500'
+                      }}>
+                        <i className="fas fa-info-circle" style={{ marginRight: '0.3rem' }}></i>
+                        Waiting list tersedia
+                      </span>
+                    </div>
+                  )}
                 </div>
               );
             })}

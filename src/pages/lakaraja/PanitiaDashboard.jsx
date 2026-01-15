@@ -292,6 +292,22 @@ const PanitiaDashboard = () => {
               Buka Menu
             </div>
           </Link>
+
+          <Link to="/lakaraja/panitia/kuota" className="bg-gradient-to-br from-zinc-900/90 to-black/90 border border-white/10 rounded-2xl p-6 hover:border-orange-500/30 transition-all cursor-pointer group">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center group-hover:bg-purple-500/30 transition-all">
+                <i className="fas fa-cog text-purple-400 text-xl"></i>
+              </div>
+              <h3 className="text-white text-xl font-bold">Pengaturan Kuota</h3>
+            </div>
+            <p className="text-white/60 text-sm mb-4">
+              Kelola kuota maksimal peserta per kategori
+            </p>
+            <div className="w-full py-2 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 rounded-lg transition-all text-center">
+              <i className="fas fa-arrow-right mr-2"></i>
+              Buka Menu
+            </div>
+          </Link>
         </div>
 
         {/* Quick Info */}

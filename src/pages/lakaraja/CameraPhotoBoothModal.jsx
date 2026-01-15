@@ -5,6 +5,7 @@ const CameraPhotoBoothModal = ({ isOpen, onClose, onCapture, participantName }) 
   const [stream, setStream] = useState(null);
   const [capturedImage, setCapturedImage] = useState(null);
   const [isCameraReady, setIsCameraReady] = useState(false);
+  const [countdown, setCountdown] = useState(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
 
@@ -54,23 +55,69 @@ const CameraPhotoBoothModal = ({ isOpen, onClose, onCapture, participantName }) 
     }
   };
 
-  const capturePhoto = () => {
+  const startCountdown = () => {
+    setCountdown(3);
+    
+    const countdownInterval = setInterval(() => {
+      setCountdown(prev => {
+        if (prev === 1) {
+          clearInterval(countdownInterval);
+          // Capture photo after countdown
+          setTimeout(() => {
+            capturePhotoNow();
+            setCountdown(null);
+          }, 1000);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  const capturePhotoNow = () => {
     if (!videoRef.current || !canvasRef.current) return;
 
     const video = videoRef.current;
     const canvas = canvasRef.current;
     
-    // Set canvas size to match video
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    // Maximum dimensions for the photo (to reduce file size)
+    const MAX_WIDTH = 800;
+    const MAX_HEIGHT = 800;
+    
+    let width = video.videoWidth;
+    let height = video.videoHeight;
+    
+    // Calculate new dimensions while maintaining aspect ratio
+    if (width > height) {
+      if (width > MAX_WIDTH) {
+        height = Math.round((height * MAX_WIDTH) / width);
+        width = MAX_WIDTH;
+      }
+    } else {
+      if (height > MAX_HEIGHT) {
+        width = Math.round((width * MAX_HEIGHT) / height);
+        height = MAX_HEIGHT;
+      }
+    }
+    
+    // Set canvas to resized dimensions
+    canvas.width = width;
+    canvas.height = height;
 
     const ctx = canvas.getContext('2d');
     
-    // Draw video frame to canvas
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    // Draw video frame to canvas with resized dimensions
+    ctx.drawImage(video, 0, 0, width, height);
 
-    // Get image as data URL
-    const imageDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+    // Get image as data URL with compression (0.7 quality = ~70% compression)
+    const imageDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+    
+    // Check file size (base64 string length / 1.37 ≈ actual bytes)
+    const sizeInBytes = (imageDataUrl.length * 3) / 4;
+    const sizeInKB = Math.round(sizeInBytes / 1024);
+    
+    console.log(`Foto captured: ${width}x${height}, Size: ~${sizeInKB}KB`);
+    
     setCapturedImage(imageDataUrl);
     
     // Stop camera after capture
@@ -160,6 +207,42 @@ const CameraPhotoBoothModal = ({ isOpen, onClose, onCapture, participantName }) 
                       {/* Enhanced Camera Frame Guides */}
                       {isCameraReady && (
                         <div className="absolute inset-0 pointer-events-none">
+                          {/* Countdown Overlay */}
+                          {countdown !== null && (
+                            <div className="absolute inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+                              <div className="text-center">
+                                {countdown > 0 ? (
+                                  <>
+                                    <div className="relative mb-4">
+                                      {/* Pulsing Ring */}
+                                      <div className="absolute inset-0 w-48 h-48 mx-auto rounded-full bg-orange-500/20 animate-ping"></div>
+                                      <div className="absolute inset-0 w-48 h-48 mx-auto rounded-full bg-gradient-to-r from-orange-500 to-red-500 opacity-30 blur-xl"></div>
+                                      
+                                      {/* Countdown Number */}
+                                      <div className="relative w-48 h-48 mx-auto rounded-full bg-gradient-to-br from-orange-500 via-red-500 to-yellow-500 flex items-center justify-center shadow-2xl shadow-orange-500/50 animate-bounce">
+                                        <span className="text-9xl font-black text-white drop-shadow-2xl">
+                                          {countdown}
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <p className="text-white text-2xl font-bold animate-pulse mt-6">
+                                      Bersiaplah...
+                                    </p>
+                                  </>
+                                ) : (
+                                  <>
+                                    <div className="mb-4">
+                                      <i className="fas fa-camera text-8xl text-orange-500 animate-pulse"></i>
+                                    </div>
+                                    <p className="text-white text-3xl font-bold animate-pulse">
+                                      CHEESE! 📸
+                                    </p>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
                           {/* Gradient Overlay Edges */}
                           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/20"></div>
                           
@@ -299,10 +382,10 @@ const CameraPhotoBoothModal = ({ isOpen, onClose, onCapture, participantName }) 
                   Batal
                 </button>
                 <button
-                  onClick={capturePhoto}
-                  disabled={!isCameraReady}
+                  onClick={startCountdown}
+                  disabled={!isCameraReady || countdown !== null}
                   className={`px-8 py-3 rounded-lg transition-all font-semibold ${
-                    isCameraReady
+                    isCameraReady && countdown === null
                       ? 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white'
                       : 'bg-gray-600 text-gray-400 cursor-not-allowed'
                   }`}

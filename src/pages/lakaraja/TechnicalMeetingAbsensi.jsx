@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import api from '../../services/api';
 import CameraPhotoBoothModal from './CameraPhotoBoothModal';
+import SuccessWelcomeModal from './SuccessWelcomeModal';
 
 const TechnicalMeetingAbsensi = () => {
   const navigate = useNavigate();
@@ -12,9 +13,11 @@ const TechnicalMeetingAbsensi = () => {
   const [stats, setStats] = useState(null);
   const [selectedKategori, setSelectedKategori] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [showAbsenOnly, setShowAbsenOnly] = useState(false);
+  const [activeTab, setActiveTab] = useState('all'); // 'all', 'hadir', 'belum'
   const [showCamera, setShowCamera] = useState(false);
   const [selectedParticipant, setSelectedParticipant] = useState(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successParticipant, setSuccessParticipant] = useState(null);
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
   useEffect(() => {
@@ -41,7 +44,7 @@ const TechnicalMeetingAbsensi = () => {
 
   useEffect(() => {
     filterParticipants();
-  }, [participants, selectedKategori, searchQuery, showAbsenOnly]);
+  }, [participants, selectedKategori, searchQuery, activeTab]);
 
   const loadData = async () => {
     try {
@@ -86,8 +89,10 @@ const TechnicalMeetingAbsensi = () => {
       );
     }
 
-    // Filter by absen status
-    if (showAbsenOnly) {
+    // Filter by tab (activeTab)
+    if (activeTab === 'hadir') {
+      filtered = filtered.filter(p => p.sudah_absen);
+    } else if (activeTab === 'belum') {
       filtered = filtered.filter(p => !p.sudah_absen);
     }
 
@@ -116,10 +121,22 @@ const TechnicalMeetingAbsensi = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      toast.success('Absensi berhasil dicatat dengan foto');
+      // Close camera and show success modal
       setShowCamera(false);
+      setSuccessParticipant({
+        nama: selectedParticipant.nama_satuan,
+        kategori: selectedParticipant.kategori,
+        logo: selectedParticipant.logo_satuan ? `${API_BASE_URL}${selectedParticipant.logo_satuan}` : null
+      });
+      setShowSuccessModal(true);
+      
+      // Clear selected participant
       setSelectedParticipant(null);
-      loadData();
+      
+      // Reload data after modal is shown
+      setTimeout(() => {
+        loadData();
+      }, 500);
     } catch (error) {
       console.error('Failed to mark attendance:', error);
       toast.error(error.response?.data?.message || 'Gagal mencatat absensi');
@@ -239,9 +256,48 @@ const TechnicalMeetingAbsensi = () => {
           </div>
         )}
 
+        {/* Tab Navigation */}
+        <div className="bg-gradient-to-br from-zinc-900 to-black border border-orange-500/20 rounded-xl p-2 mb-6">
+          <div className="flex gap-2">
+            <button
+              onClick={() => setActiveTab('all')}
+              className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all ${
+                activeTab === 'all'
+                  ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/30'
+                  : 'bg-black/30 text-white/60 hover:bg-black/50 hover:text-white'
+              }`}
+            >
+              <i className="fas fa-users mr-2"></i>
+              Semua ({stats ? stats.total_peserta : 0})
+            </button>
+            <button
+              onClick={() => setActiveTab('hadir')}
+              className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all ${
+                activeTab === 'hadir'
+                  ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg shadow-green-500/30'
+                  : 'bg-black/30 text-white/60 hover:bg-black/50 hover:text-white'
+              }`}
+            >
+              <i className="fas fa-check-circle mr-2"></i>
+              Sudah Hadir ({stats ? stats.total_hadir : 0})
+            </button>
+            <button
+              onClick={() => setActiveTab('belum')}
+              className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all ${
+                activeTab === 'belum'
+                  ? 'bg-gradient-to-r from-yellow-500 to-amber-500 text-white shadow-lg shadow-yellow-500/30'
+                  : 'bg-black/30 text-white/60 hover:bg-black/50 hover:text-white'
+              }`}
+            >
+              <i className="fas fa-clock mr-2"></i>
+              Belum Hadir ({stats ? stats.total_peserta - stats.total_hadir : 0})
+            </button>
+          </div>
+        </div>
+
         {/* Filters */}
         <div className="bg-gradient-to-br from-zinc-900 to-black border border-orange-500/20 rounded-xl p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">{/* Search */}
             {/* Search */}
             <div>
               <label className="text-white/60 text-sm mb-2 block">Cari Sekolah</label>
@@ -270,22 +326,6 @@ const TechnicalMeetingAbsensi = () => {
                 <option value="SMP">SMP</option>
                 <option value="SMA">SMA</option>
               </select>
-            </div>
-
-            {/* Status Filter */}
-            <div>
-              <label className="text-white/60 text-sm mb-2 block">Status Absen</label>
-              <div className="flex items-center h-10">
-                <label className="flex items-center gap-2 text-white cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={showAbsenOnly}
-                    onChange={(e) => setShowAbsenOnly(e.target.checked)}
-                    className="w-4 h-4 rounded bg-black/50 border-orange-500/20 text-orange-500 focus:ring-orange-500 focus:ring-offset-0"
-                  />
-                  <span>Tampilkan yang belum absen saja</span>
-                </label>
-              </div>
             </div>
           </div>
 
@@ -521,6 +561,15 @@ const TechnicalMeetingAbsensi = () => {
         }}
         onCapture={handlePhotoCapture}
         participantName={selectedParticipant?.nama_satuan || ''}
+      />
+
+      {/* Success Welcome Modal */}
+      <SuccessWelcomeModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        participantName={successParticipant?.nama || ''}
+        kategori={successParticipant?.kategori || ''}
+        logoUrl={successParticipant?.logo || null}
       />
     </div>
   );
