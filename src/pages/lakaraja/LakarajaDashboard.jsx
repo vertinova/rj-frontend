@@ -985,15 +985,15 @@ const LakarajaDashboard = () => {
             <h4 className="text-white font-bold mb-4">Pilih Kategori</h4>
             <div className="space-y-3">
               {['SD', 'SMP', 'SMA'].map((kat) => {
-                const quota = quotaInfo[kat] || { max: 0, current: 0, available: 0, isFull: false };
+                const quota = quotaInfo[kat] || { max: 0, current: 0, available: 0, isFull: false, waitingList: 0 };
                 
                 return (
                   <div 
                     key={kat}
-                    onClick={() => !quota.isFull && setShowRegistrationModal(true)}
+                    onClick={() => setShowRegistrationModal(true)}
                     className={`p-4 rounded-2xl border transition-all cursor-pointer ${
                       quota.isFull 
-                        ? 'bg-red-500/10 border-red-500/30 cursor-not-allowed' 
+                        ? 'bg-yellow-500/10 border-yellow-500/30 hover:bg-yellow-500/20' 
                         : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-red-500/50'
                     }`}
                   >
@@ -1008,11 +1008,24 @@ const LakarajaDashboard = () => {
                         </div>
                         <div>
                           <p className="text-white font-semibold">Kategori {kat}</p>
-                          <p className="text-white/60 text-sm">{quota.available} kuota tersisa</p>
+                          <p className="text-white/60 text-sm">
+                            {quota.isFull ? (
+                              <span className="text-yellow-400">Waiting List Tersedia</span>
+                            ) : (
+                              `${quota.available} kuota tersisa`
+                            )}
+                          </p>
                         </div>
                       </div>
                       {quota.isFull ? (
-                        <span className="px-3 py-1 bg-red-500/20 text-red-400 text-xs font-bold rounded-full">PENUH</span>
+                        <div className="flex flex-col items-end gap-1">
+                          <span className="px-3 py-1 bg-red-500/20 text-red-400 text-xs font-bold rounded-full">PENUH</span>
+                          {quota.waitingList > 0 && (
+                            <span className="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-[10px] font-semibold rounded-full">
+                              {quota.waitingList} WL
+                            </span>
+                          )}
+                        </div>
                       ) : (
                         <i className="fas fa-chevron-right text-white/50"></i>
                       )}
@@ -1558,32 +1571,60 @@ const LakarajaDashboard = () => {
                 </label>
                 <div className="grid grid-cols-3 gap-3">
                   {['SD', 'SMP', 'SMA'].map((kat) => {
-                    const quota = quotaInfo[kat] || { max: 0, current: 0, available: 0, isFull: false };
+                    const quota = quotaInfo[kat] || { max: 0, current: 0, available: 0, isFull: false, waitingList: 0 };
                     
                     return (
                       <button
                         key={kat}
                         type="button"
-                        disabled={quota.isFull}
-                        onClick={() => !quota.isFull && setFormData(prev => ({ ...prev, kategori: kat }))}
+                        onClick={() => setFormData(prev => ({ ...prev, kategori: kat }))}
                         className={`py-3 px-4 rounded-xl font-semibold text-sm transition-all relative ${
                           formData.kategori === kat
-                            ? 'bg-red-500 text-white shadow-lg shadow-red-500/30'
-                            : quota.isFull
-                              ? 'bg-white/5 text-white/30 cursor-not-allowed'
-                              : 'bg-white/10 text-white hover:bg-white/20'
+                            ? quota.isFull
+                              ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-lg shadow-yellow-500/30'
+                              : 'bg-red-500 text-white shadow-lg shadow-red-500/30'
+                            : 'bg-white/10 text-white hover:bg-white/20'
                         }`}
                       >
                         {kat}
                         <span className={`block text-xs mt-1 ${
-                          formData.kategori === kat ? 'text-white/80' : 'text-white/50'
+                          formData.kategori === kat ? 'text-white/90' : 'text-white/50'
                         }`}>
                           {quota.isFull ? 'Penuh' : `${quota.available} sisa`}
                         </span>
+                        {quota.isFull && (
+                          <span className="absolute -top-1 -right-1 px-1.5 py-0.5 bg-yellow-400 text-yellow-900 text-[10px] font-bold rounded-full">
+                            WL
+                          </span>
+                        )}
                       </button>
                     );
                   })}
                 </div>
+                
+                {/* Waiting List Info */}
+                {formData.kategori && quotaInfo[formData.kategori]?.isFull && (
+                  <div className="mt-3 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl">
+                    <div className="flex items-start gap-2">
+                      <i className="fas fa-hourglass-half text-yellow-400 text-sm mt-0.5"></i>
+                      <div className="flex-1">
+                        <p className="text-yellow-400 text-xs font-semibold mb-1">
+                          Kategori {formData.kategori} Sudah Penuh
+                        </p>
+                        <p className="text-white/70 text-xs">
+                          Pendaftaran Anda akan masuk ke <strong className="text-yellow-400">Waiting List</strong>. 
+                          Anda akan dipromosikan otomatis jika ada slot tersedia.
+                        </p>
+                        {quotaInfo[formData.kategori].waitingList > 0 && (
+                          <p className="text-white/60 text-xs mt-1">
+                            <i className="fas fa-users text-yellow-400 mr-1"></i>
+                            {quotaInfo[formData.kategori].waitingList} peserta di waiting list
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Upload Logo */}
