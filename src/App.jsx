@@ -12,6 +12,7 @@ import LakarajaDashboard from './pages/lakaraja/LakarajaDashboard'
 import PanitiaDashboard from './pages/lakaraja/PanitiaDashboard'
 import ManageUsers from './pages/lakaraja/ManageUsers'
 import ManagePendaftaran from './pages/lakaraja/ManagePendaftaran'
+import TechnicalMeetingAbsensi from './pages/lakaraja/TechnicalMeetingAbsensi'
 import TarunaDashboard from './pages/taruna/TarunaDashboard'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import NotFound from './pages/NotFound'
@@ -189,6 +190,10 @@ function App() {
         <Route 
           path="/lakaraja/panitia/pendaftaran" 
           element={<ManagePendaftaran />} 
+        />
+        <Route 
+          path="/lakaraja/panitia/technical-meeting" 
+          element={<TechnicalMeetingAbsensi />} 
         />
 
         {/* Taruna Routes */}

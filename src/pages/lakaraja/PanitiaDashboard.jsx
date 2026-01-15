@@ -244,7 +244,7 @@ const PanitiaDashboard = () => {
         )}
 
         {/* Menu Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <Link to="/lakaraja/panitia/users" className="bg-gradient-to-br from-zinc-900/90 to-black/90 border border-white/10 rounded-2xl p-6 hover:border-orange-500/30 transition-all cursor-pointer group">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center group-hover:bg-blue-500/30 transition-all">
@@ -272,6 +272,22 @@ const PanitiaDashboard = () => {
               Review dan verifikasi pendaftaran kompetisi dari peserta
             </p>
             <div className="w-full py-2 bg-orange-500/20 hover:bg-orange-500/30 text-orange-400 rounded-lg transition-all text-center">
+              <i className="fas fa-arrow-right mr-2"></i>
+              Buka Menu
+            </div>
+          </Link>
+
+          <Link to="/lakaraja/panitia/technical-meeting" className="bg-gradient-to-br from-zinc-900/90 to-black/90 border border-white/10 rounded-2xl p-6 hover:border-orange-500/30 transition-all cursor-pointer group">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center group-hover:bg-green-500/30 transition-all">
+                <i className="fas fa-clipboard-check text-green-400 text-xl"></i>
+              </div>
+              <h3 className="text-white text-xl font-bold">Technical Meeting</h3>
+            </div>
+            <p className="text-white/60 text-sm mb-4">
+              Absensi kehadiran peserta pada technical meeting
+            </p>
+            <div className="w-full py-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 rounded-lg transition-all text-center">
               <i className="fas fa-arrow-right mr-2"></i>
               Buka Menu
             </div>
